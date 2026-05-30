@@ -1,87 +1,129 @@
 import { useEffect, useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Drawer,
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography
+} from '@mui/material';
 import { navLinks } from '../data/f1Data.js';
-import styles from './Navbar.module.css';
 
 function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState('#historia');
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 30);
-    onScroll();
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const sections = navLinks
-      .map((link) => document.querySelector(link.href))
-      .filter(Boolean);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible) {
-          setActiveLink(`#${visible.target.id}`);
-        }
-      },
-      { rootMargin: '-34% 0px -56% 0px', threshold: [0.1, 0.4, 0.7] }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  const closeDrawer = () => setIsOpen(false);
+  const navButton = (link) => (
+    <Button
+      key={link.href}
+      href={link.href}
+      onClick={() => setOpen(false)}
+      color="inherit"
+      sx={{
+        color: 'text.primary',
+        fontWeight: 800,
+        letterSpacing: '.08em',
+        px: 1.2,
+        '&:hover': { color: 'primary.main', bgcolor: 'transparent' }
+      }}
+    >
+      {link.label}
+    </Button>
+  );
 
   return (
-    <header className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}>
-      <a className={styles.wordmark} href="#top" aria-label="Ir al inicio">
-        F1 2026
-      </a>
-
-      <nav className={styles.links} aria-label="Navegacion principal">
-        {navLinks.map((link, index) => (
-          <a
-            className={`${styles.link} ${activeLink === link.href ? styles.active : ''}`}
-            href={link.href}
-            key={link.href}
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        borderBottom: scrolled ? '1px solid rgba(232,0,45,.8)' : '1px solid rgba(255,255,255,.08)',
+        bgcolor: scrolled ? 'rgba(5,5,5,.88)' : 'rgba(5,5,5,.58)',
+        backdropFilter: 'blur(18px)'
+      }}
+    >
+      <Container maxWidth="xl">
+        <Toolbar disableGutters sx={{ minHeight: { xs: 68, md: scrolled ? 68 : 82 } }}>
+          <Typography
+            component="a"
+            href="#inicio"
+            variant="h4"
+            sx={{
+              color: 'common.white',
+              flexGrow: 1,
+              lineHeight: .9,
+              textDecoration: 'none',
+              '&::after': {
+                bgcolor: 'primary.main',
+                content: '""',
+                display: 'block',
+                height: 4,
+                mt: .5,
+                transform: 'skewX(-22deg)',
+                width: 72
+              }
+            }}
           >
-            <span className={styles.linkLabel}>{link.label}</span>
-            <span className={styles.delay}>{index + 1}</span>
-          </a>
-        ))}
-      </nav>
+            F1 2026
+          </Typography>
 
-      <button
-        className={`${styles.menuButton} ${isOpen ? styles.menuOpen : ''}`}
-        type="button"
-        onClick={() => setIsOpen((value) => !value)}
-        aria-label="Abrir menu"
-        aria-expanded={isOpen}
+          <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
+            {navLinks.map(navButton)}
+          </Stack>
+
+          <IconButton
+            aria-label="Abrir menu"
+            onClick={() => setOpen(true)}
+            sx={{ color: 'common.white', display: { xs: 'inline-flex', md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </Container>
+
+      <Drawer
+        anchor="right"
+        open={open}
+        onClose={() => setOpen(false)}
+        PaperProps={{
+          sx: {
+            bgcolor: '#070707',
+            backgroundImage: 'linear-gradient(145deg, rgba(232,0,45,.18), transparent)',
+            p: 3,
+            width: 'min(86vw, 360px)'
+          }
+        }}
       >
-        <span />
-        <span />
-        <span />
-      </button>
-
-      <div className={`${styles.drawer} ${isOpen ? styles.drawerOpen : ''}`}>
-        {navLinks.map((link) => (
-          <a
-            className={activeLink === link.href ? styles.drawerActive : ''}
-            href={link.href}
-            key={link.href}
-            onClick={closeDrawer}
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
-    </header>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton aria-label="Cerrar menu" onClick={() => setOpen(false)} sx={{ color: 'common.white' }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Stack spacing={1.2} sx={{ mt: 5 }}>
+          {navLinks.map((link) => (
+            <Button
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              sx={{ color: 'common.white', fontSize: 28, justifyContent: 'flex-start' }}
+            >
+              {link.label}
+            </Button>
+          ))}
+        </Stack>
+      </Drawer>
+    </AppBar>
   );
 }
 

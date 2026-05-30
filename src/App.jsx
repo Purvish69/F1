@@ -1,58 +1,67 @@
-import { useEffect, useRef } from 'react';
+import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
-import Historia from './components/Historia.jsx';
 import Pilotos from './components/Pilotos.jsx';
 import Equipos from './components/Equipos.jsx';
+import Resultados from './components/Resultados.jsx';
 import Galeria from './components/Galeria.jsx';
 import Footer from './components/Footer.jsx';
 
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: { main: '#E8002D' },
+    secondary: { main: '#FFD700' },
+    background: {
+      default: '#050505',
+      paper: 'rgba(18, 18, 20, 0.88)'
+    },
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#B7BDC8'
+    }
+  },
+  typography: {
+    fontFamily: "'Rajdhani', sans-serif",
+    h1: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    h2: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    h3: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    h4: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    h5: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    h6: { fontFamily: "'Bebas Neue', sans-serif", letterSpacing: 0 },
+    button: { fontFamily: "'Rajdhani', sans-serif", fontWeight: 800 }
+  },
+  shape: { borderRadius: 8 },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.02))',
+          border: '1px solid rgba(255,255,255,.10)'
+        }
+      }
+    },
+    MuiButton: {
+      defaultProps: { disableElevation: true },
+      styleOverrides: { root: { borderRadius: 6, textTransform: 'none' } }
+    }
+  }
+});
+
 function App() {
-  const cursorRef = useRef(null);
-
-  useEffect(() => {
-    const revealItems = document.querySelectorAll('[data-reveal]');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          }
-        });
-      },
-      { threshold: 0.16 }
-    );
-
-    revealItems.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const updateCursor = (event) => {
-      if (!cursorRef.current) return;
-      cursorRef.current.animate(
-        { transform: `translate3d(${event.clientX}px, ${event.clientY}px, 0)` },
-        { duration: 90, fill: 'forwards', easing: 'ease-out' }
-      );
-    };
-
-    window.addEventListener('pointermove', updateCursor);
-    return () => window.removeEventListener('pointermove', updateCursor);
-  }, []);
-
   return (
-    <>
-      <div ref={cursorRef} className="custom-cursor" aria-hidden="true" />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Navbar />
       <main>
         <Hero />
-        <Historia />
         <Pilotos />
         <Equipos />
+        <Resultados />
         <Galeria />
       </main>
       <Footer />
-    </>
+    </ThemeProvider>
   );
 }
 

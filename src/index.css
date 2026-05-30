@@ -1,15 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap');
 
 :root {
+  color-scheme: dark;
   --color-primary: #E8002D;
-  --color-bg: #0a0a0a;
+  --color-bg: #050505;
   --color-white: #FFFFFF;
   --color-gold: #FFD700;
-  --font-display: 'Bebas Neue', cursive;
+  --font-display: 'Bebas Neue', sans-serif;
   --font-body: 'Rajdhani', sans-serif;
-  --color-muted: #a9a9a9;
-  --color-panel: #121212;
-  --container: 1400px;
 }
 
 * {
@@ -21,214 +19,21 @@ html {
 }
 
 body {
-  margin: 0;
   background: var(--color-bg);
-  color: var(--color-white);
-  cursor: none;
   font-family: var(--font-body);
+  margin: 0;
   overflow-x: hidden;
 }
 
 a {
   color: inherit;
-  text-decoration: none;
-}
-
-button,
-input {
-  font: inherit;
 }
 
 img {
-  display: block;
   max-width: 100%;
 }
 
-main {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(232, 0, 45, 0.14), transparent 32rem),
-    var(--color-bg);
-}
-
-.container {
-  width: min(calc(100% - 32px), var(--container));
-  margin-inline: auto;
-}
-
-.section {
-  position: relative;
-  padding: clamp(72px, 9vw, 132px) 0;
-  overflow: hidden;
-}
-
-.carbon-section {
-  background-color: #090909;
-  background-image:
-    linear-gradient(45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.025) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.018) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.018) 75%);
-  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
-  background-size: 24px 24px;
-}
-
-.section-heading {
-  border-left: 5px solid var(--color-primary);
-  margin-bottom: clamp(32px, 5vw, 66px);
-  padding-left: clamp(16px, 2vw, 26px);
-}
-
-.section-heading p {
-  color: var(--color-gold);
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  margin: 0 0 6px;
-  text-transform: uppercase;
-}
-
-.section-heading h2 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 8rem);
-  font-weight: 400;
-  letter-spacing: 0;
-  line-height: 0.9;
-  margin: 0;
-}
-
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 700ms ease, transform 700ms ease, filter 700ms ease;
-}
-
-[data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.custom-cursor {
-  display: none;
-}
-
-.team-ferrari {
-  --team-color: #DC0000;
-  --team-accent: #FFF200;
-}
-
-.team-mclaren {
-  --team-color: #FF8000;
-  --team-accent: #0090D0;
-}
-
-.team-mercedes {
-  --team-color: #00D2BE;
-  --team-accent: #C0C0C0;
-}
-
-.team-red-bull {
-  --team-color: #1E41FF;
-  --team-accent: #CC1E4A;
-}
-
-.team-aston-martin {
-  --team-color: #006F62;
-  --team-accent: #CEDC00;
-}
-
-.team-williams {
-  --team-color: #005AFF;
-  --team-accent: #FFFFFF;
-}
-
-.team-alpine {
-  --team-color: #0090FF;
-  --team-accent: #FF0000;
-}
-
-.team-audi {
-  --team-color: #BB0A21;
-  --team-accent: #C0C0C0;
-}
-
-.team-haas {
-  --team-color: #B6BABD;
-  --team-accent: #E8002D;
-}
-
-.team-racing-bulls {
-  --team-color: #1E41FF;
-  --team-accent: #FFFFFF;
-}
-
-.team-cadillac {
-  --team-color: #CC0033;
-  --team-accent: #FFFFFF;
-}
-
-.stat-75 { --stat-width: 75%; }
-.stat-76 { --stat-width: 76%; }
-.stat-77 { --stat-width: 77%; }
-.stat-78 { --stat-width: 78%; }
-.stat-79 { --stat-width: 79%; }
-.stat-80 { --stat-width: 80%; }
-.stat-81 { --stat-width: 81%; }
-.stat-82 { --stat-width: 82%; }
-.stat-83 { --stat-width: 83%; }
-.stat-84 { --stat-width: 84%; }
-.stat-85 { --stat-width: 85%; }
-.stat-86 { --stat-width: 86%; }
-.stat-87 { --stat-width: 87%; }
-.stat-88 { --stat-width: 88%; }
-.stat-89 { --stat-width: 89%; }
-.stat-90 { --stat-width: 90%; }
-.stat-91 { --stat-width: 91%; }
-.stat-92 { --stat-width: 92%; }
-.stat-94 { --stat-width: 94%; }
-.stat-95 { --stat-width: 95%; }
-.stat-96 { --stat-width: 96%; }
-
-@media (hover: hover) and (pointer: fine) {
-  .custom-cursor {
-    border: 1px solid rgba(232, 0, 45, 0.82);
-    border-radius: 999px;
-    display: block;
-    height: 18px;
-    left: -9px;
-    pointer-events: none;
-    position: fixed;
-    top: -9px;
-    width: 18px;
-    z-index: 9999;
-  }
-
-  .custom-cursor::before,
-  .custom-cursor::after {
-    background: var(--color-primary);
-    content: '';
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .custom-cursor::before {
-    height: 4px;
-    width: 4px;
-  }
-
-  .custom-cursor::after {
-    height: 1px;
-    width: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    width: min(calc(100% - 24px), var(--container));
-  }
-
-  .section {
-    padding: 64px 0;
-  }
+::selection {
+  background: var(--color-primary);
+  color: var(--color-white);
 }

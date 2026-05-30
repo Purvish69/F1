@@ -5,11 +5,15 @@
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.0.1",
+    "@mui/material": "^9.0.1",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "framer-motion": "^12.40.0",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "latest"
-  },
-  "devDependencies": {}
+    "react-router-dom": "latest",
+    "vite": "latest"
+  }
 }

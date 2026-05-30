@@ -1,0 +1,174 @@
+.navbar {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 10, 0.7);
+  border-bottom: 2px solid transparent;
+  display: flex;
+  height: 84px;
+  justify-content: space-between;
+  left: 0;
+  padding: 0 clamp(18px, 4vw, 58px);
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: height 260ms ease, border-color 260ms ease, background 260ms ease;
+  z-index: 1000;
+}
+
+.scrolled {
+  background: rgba(10, 10, 10, 0.88);
+  border-bottom-color: var(--color-primary);
+  height: 66px;
+}
+
+.wordmark {
+  display: inline-flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.wordmark::after {
+  background: var(--color-primary);
+  content: '';
+  height: 3px;
+  margin-top: 4px;
+  transform: skewX(-22deg);
+  width: 64%;
+}
+
+.links {
+  display: flex;
+  gap: clamp(20px, 3vw, 42px);
+}
+
+.link {
+  animation: navIn 500ms ease both;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  overflow: hidden;
+  padding: 10px 0;
+  position: relative;
+  text-transform: uppercase;
+}
+
+.link:nth-child(1) { animation-delay: 100ms; }
+.link:nth-child(2) { animation-delay: 200ms; }
+.link:nth-child(3) { animation-delay: 300ms; }
+.link:nth-child(4) { animation-delay: 400ms; }
+
+.link::after {
+  background: var(--color-primary);
+  bottom: 4px;
+  content: '';
+  height: 2px;
+  left: 0;
+  position: absolute;
+  transform: translateX(-105%);
+  transition: transform 260ms ease;
+  width: 100%;
+}
+
+.link:hover,
+.link:focus-visible,
+.active {
+  color: var(--color-white);
+}
+
+.link:hover::after,
+.link:focus-visible::after,
+.active::after {
+  transform: translateX(0);
+}
+
+.delay {
+  display: none;
+}
+
+.menuButton {
+  background: transparent;
+  border: 0;
+  display: none;
+  height: 42px;
+  padding: 8px;
+  width: 46px;
+}
+
+.menuButton span {
+  background: var(--color-white);
+  display: block;
+  height: 2px;
+  margin: 6px 0;
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.menuOpen span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menuOpen span:nth-child(2) {
+  opacity: 0;
+}
+
+.menuOpen span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+.drawer {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(232, 0, 45, 0.2), transparent 42%),
+    rgba(7, 7, 7, 0.98);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transform: translateX(100%);
+  transition: opacity 240ms ease, transform 320ms ease;
+  z-index: -1;
+}
+
+.drawerOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.drawer a {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 14vw, 6rem);
+}
+
+.drawerActive {
+  color: var(--color-primary);
+}
+
+@keyframes navIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .links {
+    display: none;
+  }
+
+  .menuButton {
+    display: block;
+  }
+}

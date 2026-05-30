@@ -41,14 +41,26 @@ function Pilotos() {
               Datos de standings, puntos y rendimiento basados en la página oficial de pilotos y resultados de Formula 1.
             </Typography>
           </Box>
-          <Paper sx={{ alignSelf: { xs: 'stretch', md: 'flex-end' }, p: 1.2 }}>
+          <Paper
+            sx={{
+              alignSelf: { xs: 'stretch', md: 'flex-end' },
+              backdropFilter: 'blur(18px)',
+              bgcolor: 'rgba(255,255,255,.055)',
+              border: '1px solid rgba(255,255,255,.12)',
+              p: 1.2
+            }}
+          >
             <Stack direction="row" spacing={1.2} alignItems="center">
               <FilterAltIcon color="primary" />
               <Select
                 value={teamFilter}
                 onChange={(event) => setTeamFilter(event.target.value)}
                 size="small"
-                sx={{ minWidth: 220 }}
+                sx={{
+                  minWidth: 220,
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,.16)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,.32)' }
+                }}
               >
                 <MenuItem value="all">Todos los equipos</MenuItem>
                 {teams.map((team) => (

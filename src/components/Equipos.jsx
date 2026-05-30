@@ -34,7 +34,7 @@ function Equipos() {
 
         <Grid container spacing={2.5}>
           {teams.map((team) => (
-            <Grid item xs={12} md={6} xl={4} key={team.slug}>
+            <Grid item xs={12} lg={6} key={team.slug}>
               <EquipoCard team={team} driverMap={driverMap} />
             </Grid>
           ))}

@@ -1,25 +1,32 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
+  Avatar,
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
-  Divider,
   Grid,
-  LinearProgress,
   Stack,
   Typography
 } from '@mui/material';
+import { motion } from 'framer-motion';
 
-function Field({ label, value }) {
+function InfoPill({ label, value }) {
   return (
-    <Stack spacing={.3}>
-      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900, textTransform: 'uppercase' }}>
+    <Box
+      sx={{
+        bgcolor: 'rgba(0,0,0,.24)',
+        border: '1px solid rgba(255,255,255,.16)',
+        borderRadius: 1,
+        px: 1.2,
+        py: .8
+      }}
+    >
+      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,.66)', fontWeight: 900, textTransform: 'uppercase' }}>
         {label}
       </Typography>
-      <Typography sx={{ fontWeight: 800 }}>{value}</Typography>
-    </Stack>
+      <Typography sx={{ color: 'common.white', fontWeight: 900, lineHeight: 1.1 }}>{value}</Typography>
+    </Box>
   );
 }
 
@@ -34,78 +41,106 @@ function EquipoCard({ team, driverMap }) {
 
   return (
     <Card
+      component={motion.article}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: .45 }}
       sx={{
-        borderColor: `${team.color}66`,
-        height: '100%',
+        background:
+          `linear-gradient(135deg, ${team.color}F2, ${team.color}C7 44%, rgba(12,12,16,.94)), radial-gradient(circle at 78% 16%, rgba(255,255,255,.24), transparent 12rem)`,
+        borderColor: `${team.color}99`,
+        minHeight: 340,
         overflow: 'hidden',
-        transition: 'transform .24s ease, box-shadow .24s ease',
-        '&:hover': { boxShadow: `0 24px 80px ${team.color}32`, transform: 'translateY(-6px)' }
+        position: 'relative',
+        transition: 'box-shadow .28s ease, border-color .28s ease',
+        '&:hover': {
+          borderColor: 'rgba(255,255,255,.55)',
+          boxShadow: `0 28px 90px ${team.color}36`,
+          '& .team-car': { transform: 'translate3d(10px,-6px,0) scale(1.03)' }
+        }
       }}
     >
-      <Box sx={{ bgcolor: `${team.color}18`, p: 2.2, position: 'relative' }}>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <Chip label={`P${team.position}`} sx={{ bgcolor: team.color, color: 'common.white', fontWeight: 900 }} />
-          <Chip label={`${team.points} pts`} variant="outlined" />
+      <Box
+        sx={{
+          backgroundImage: 'radial-gradient(rgba(255,255,255,.22) 1px, transparent 1px)',
+          backgroundSize: '6px 6px',
+          bottom: 0,
+          height: '48%',
+          left: 0,
+          opacity: .28,
+          position: 'absolute',
+          right: 0
+        }}
+      />
+      <Box sx={{ p: { xs: 2.2, md: 3 }, position: 'relative', zIndex: 1 }}>
+        {/* Logica de seccion: tarjeta horizontal con coche protagonista y datos compactos. */}
+        <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+          <Box>
+            <Typography variant="h3" sx={{ color: 'common.white', lineHeight: .9 }}>
+              {team.name}
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1.3 }}>
+              {teamDrivers.map((driver) => (
+                <Chip
+                  key={driver.id}
+                  avatar={<Avatar src={driver.image} alt={driver.name} />}
+                  label={`${driver.name.split(' ').at(-1).toUpperCase()} · ${driver.points} pts`}
+                  sx={{
+                    bgcolor: 'rgba(0,0,0,.24)',
+                    color: 'common.white',
+                    fontWeight: 900
+                  }}
+                />
+              ))}
+            </Stack>
+          </Box>
+          <Stack spacing={1} alignItems="flex-end">
+            <Chip label={`P${team.position}`} sx={{ bgcolor: 'rgba(255,255,255,.94)', color: '#050505', fontWeight: 1000, minWidth: 70 }} />
+            <Chip label={`${team.points} pts`} sx={{ bgcolor: 'rgba(0,0,0,.28)', color: 'common.white', fontWeight: 900 }} />
+          </Stack>
         </Stack>
+
         <Box
           component="img"
+          className="team-car"
           src={team.car}
           alt={`${team.name} 2026 car`}
           loading="lazy"
-          sx={{ filter: `drop-shadow(0 22px 42px ${team.color}44)`, mt: 2, width: '100%' }}
+          sx={{
+            display: 'block',
+            filter: 'drop-shadow(0 28px 38px rgba(0,0,0,.42))',
+            ml: { xs: -2, md: -1 },
+            mt: { xs: 3, md: 2 },
+            position: 'relative',
+            transition: 'transform .36s cubic-bezier(.2,.8,.2,1)',
+            width: { xs: '118%', md: '108%' },
+            zIndex: 1
+          }}
         />
+
+        <Grid container spacing={1.2} sx={{ mt: { xs: 1, md: -1 } }}>
+          <Grid item xs={6} sm={3}><InfoPill label="Motor" value={team.engine} /></Grid>
+          <Grid item xs={6} sm={3}><InfoPill label="Chasis" value={team.chassis} /></Grid>
+          <Grid item xs={6} sm={3}><InfoPill label="Podios" value={team.podiums} /></Grid>
+          <Grid item xs={6} sm={3}><InfoPill label="Jefe" value={team.chief} /></Grid>
+        </Grid>
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} alignItems={{ xs: 'stretch', sm: 'center' }} justifyContent="space-between" sx={{ mt: 1.6 }}>
+          <Typography sx={{ color: 'rgba(255,255,255,.76)', fontWeight: 800 }}>
+            {team.base} · {team.fullName}
+          </Typography>
+          <Button
+            href={`https://www.formula1.com/en/teams/${officialSlug}`}
+            target="_blank"
+            rel="noreferrer"
+            endIcon={<OpenInNewIcon />}
+            sx={{ bgcolor: 'rgba(0,0,0,.28)', color: 'common.white', whiteSpace: 'nowrap', '&:hover': { bgcolor: 'rgba(0,0,0,.42)' } }}
+          >
+            Equipo oficial
+          </Button>
+        </Stack>
       </Box>
-      <CardContent sx={{ p: 2.4 }}>
-        {/* Logica de seccion: cada equipo junta datos deportivos, estructura y pilotos. */}
-        <Typography variant="h3" sx={{ lineHeight: .9 }}>{team.name}</Typography>
-        <Typography sx={{ color: 'text.secondary', fontWeight: 800, mt: .5 }}>{team.fullName}</Typography>
-
-        <Grid container spacing={1.5} sx={{ mt: 2 }}>
-          <Grid item xs={4}><Field label="Wins" value={team.wins} /></Grid>
-          <Grid item xs={4}><Field label="Podios" value={team.podiums} /></Grid>
-          <Grid item xs={4}><Field label="Poles" value={team.poles} /></Grid>
-        </Grid>
-
-        <Stack spacing={1.4} sx={{ mt: 2.5 }}>
-          <Box>
-            <Stack direction="row" justifyContent="space-between">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 900 }}>PUNTOS DE CONSTRUCTORES</Typography>
-              <Typography variant="caption">{team.points}/219</Typography>
-            </Stack>
-            <LinearProgress
-              variant="determinate"
-              value={(team.points / 219) * 100}
-              sx={{ bgcolor: 'rgba(255,255,255,.10)', height: 8, '& .MuiLinearProgress-bar': { bgcolor: team.color } }}
-            />
-          </Box>
-        </Stack>
-
-        <Divider sx={{ my: 2.4 }} />
-        <Grid container spacing={1.5}>
-          <Grid item xs={6}><Field label="Base" value={team.base} /></Grid>
-          <Grid item xs={6}><Field label="Team chief" value={team.chief} /></Grid>
-          <Grid item xs={6}><Field label="Chasis" value={team.chassis} /></Grid>
-          <Grid item xs={6}><Field label="Power unit" value={team.engine} /></Grid>
-        </Grid>
-
-        <Stack direction="row" spacing={1.2} sx={{ mt: 2.4 }}>
-          {teamDrivers.map((driver) => (
-            <Chip key={driver.id} label={`${driver.short} · ${driver.points} pts`} sx={{ borderColor: `${team.color}88` }} variant="outlined" />
-          ))}
-        </Stack>
-
-        <Button
-          href={`https://www.formula1.com/en/teams/${officialSlug}`}
-          target="_blank"
-          rel="noreferrer"
-          endIcon={<OpenInNewIcon />}
-          fullWidth
-          sx={{ mt: 2.4 }}
-          variant="contained"
-        >
-          Perfil oficial del equipo
-        </Button>
-      </CardContent>
     </Card>
   );
 }

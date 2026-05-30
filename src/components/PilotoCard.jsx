@@ -11,6 +11,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
+import { motion } from 'framer-motion';
 
 function Stat({ label, value }) {
   return (
@@ -28,62 +29,111 @@ function PilotoCard({ pilot, team }) {
 
   return (
     <Card
+      component={motion.article}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: .45 }}
       sx={{
         borderColor: `${team.color}66`,
         height: '100%',
         overflow: 'hidden',
         position: 'relative',
-        transition: 'transform .24s ease, box-shadow .24s ease',
+        transition: 'box-shadow .24s ease, border-color .24s ease',
         '&:hover': {
+          borderColor: `${team.color}CC`,
           boxShadow: `0 24px 70px ${team.color}38`,
-          transform: 'translateY(-8px)'
+          '& .driver-photo': { transform: 'translate3d(0,-8px,0) scale(1.04)' },
+          '& .driver-glow': { opacity: 1 }
         }
       }}
     >
       <Box
         sx={{
-          bgcolor: `${team.color}24`,
-          minHeight: 260,
+          background:
+            `radial-gradient(circle at 82% 18%, rgba(255,255,255,.24), transparent 9rem), linear-gradient(135deg, ${team.color}D8, ${team.color}66 52%, rgba(7,7,9,.92))`,
+          minHeight: 286,
           overflow: 'hidden',
           position: 'relative'
         }}
       >
+        <Box
+          className="driver-glow"
+          sx={{
+            bgcolor: `${team.color}66`,
+            borderRadius: '50%',
+            filter: 'blur(52px)',
+            height: 180,
+            opacity: .55,
+            position: 'absolute',
+            right: 36,
+            top: 40,
+            transition: 'opacity .3s ease',
+            width: 180
+          }}
+        />
+        <Box
+          sx={{
+            backgroundImage: 'radial-gradient(rgba(255,255,255,.22) 1px, transparent 1px)',
+            backgroundSize: '6px 6px',
+            inset: 0,
+            opacity: .22,
+            position: 'absolute'
+          }}
+        />
         <Typography
           variant="h1"
           sx={{
-            color: 'rgba(255,255,255,.08)',
-            fontSize: 150,
+            color: 'rgba(255,255,255,.12)',
+            fontSize: { xs: 150, sm: 170 },
             lineHeight: .8,
             position: 'absolute',
-            right: 12,
-            top: 18
+            right: 14,
+            top: 18,
+            zIndex: 0
           }}
         >
           {pilot.number}
         </Typography>
         <Box
           component="img"
+          className="driver-photo"
           src={pilot.image}
           alt={pilot.name}
           loading="lazy"
           sx={{
             bottom: 0,
-            height: 300,
+            height: { xs: 256, sm: 272 },
             objectFit: 'contain',
+            objectPosition: 'top center',
             position: 'absolute',
-            right: { xs: -18, sm: 0 },
-            width: 210
+            right: { xs: -4, sm: 18 },
+            transition: 'transform .35s cubic-bezier(.2,.8,.2,1)',
+            width: { xs: 190, sm: 210 },
+            zIndex: 1
           }}
         />
-        <Stack spacing={1} sx={{ left: 18, position: 'absolute', top: 18 }}>
-          <Chip label={`P${pilot.position}`} sx={{ bgcolor: team.color, color: 'common.white', fontWeight: 900 }} />
-          <Chip label={`${pilot.flag} ${pilot.nationality}`} variant="outlined" />
+        <Stack spacing={1} sx={{ left: 18, position: 'absolute', top: 18, zIndex: 2 }}>
+          <Chip
+            label={`P${pilot.position}`}
+            sx={{
+              bgcolor: 'rgba(255,255,255,.92)',
+              color: '#050505',
+              fontWeight: 1000,
+              minWidth: 86
+            }}
+          />
+          <Chip
+            label={`${pilot.flag} ${pilot.nationality}`}
+            sx={{ bgcolor: 'rgba(5,5,5,.32)', borderColor: 'rgba(255,255,255,.34)', color: 'common.white' }}
+            variant="outlined"
+          />
         </Stack>
       </Box>
 
-      <CardContent sx={{ p: 2.4 }}>
+      <CardContent sx={{ bgcolor: '#111214', p: 2.4 }}>
         {/* Logica de seccion: la ficha mezcla standings, ritmo de temporada y enlace oficial. */}
-        <Typography variant="h4" sx={{ lineHeight: .9 }}>{pilot.name}</Typography>
+        <Typography variant="h4" sx={{ lineHeight: .9, textTransform: 'uppercase' }}>{pilot.name}</Typography>
         <Typography sx={{ color: team.color, fontWeight: 900, mt: .5 }}>{pilot.team}</Typography>
         <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mt: 2 }}>
           <Typography variant="h3" sx={{ lineHeight: .8 }}>{pilot.points}</Typography>

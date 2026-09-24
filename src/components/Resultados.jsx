@@ -15,9 +15,23 @@ import {
   TableRow,
   Typography
 } from '@mui/material';
-import { drivers, raceResults, sourceLinks, teams } from '../data/f1Data.js';
+import { sourceLinks } from '../data/f1Data.js';
+import { useChampionship, useResults } from '../hooks/useChampionship.js';
+import { getTeamVisual } from '../data/visualMetadata.js';
+import { ErrorState, LoadingState } from './ApiStatus.jsx';
 
 function Resultados() {
+  const championship = useChampionship();
+  const results = useResults();
+  const races = (results.data || []).filter((race) => race.Results?.length).map((race) => {
+    const winner = race.Results[0];
+    return { round: race.round, grandPrix: race.raceName, date: race.date, winner: `${winner.Driver.givenName} ${winner.Driver.familyName}`, code: winner.Driver.code, team: winner.Constructor.name, laps: winner.laps };
+  });
+  const drivers = championship.data?.drivers || [];
+  const teams = championship.data?.teams || [];
+  const isLoading = championship.loading || results.loading;
+  const error = championship.error || results.error;
+
   return (
     <Box component="section" id="resultados" sx={{ py: { xs: 8, md: 12 } }}>
       <Container maxWidth="xl">
@@ -33,7 +47,9 @@ function Resultados() {
           </Typography>
         </Stack>
 
-        <Grid container spacing={2.5}>
+        {isLoading && <LoadingState label="Cargando resultados y clasificación..." cards={4} />}
+        {error && !championship.data && <ErrorState error={error} onRetry={() => { championship.refresh(); results.refresh(); }} />}
+        {!isLoading && championship.data && <Grid container spacing={2.5}>
           <Grid item xs={12} lg={7}>
             <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
               <Table>
@@ -48,7 +64,7 @@ function Resultados() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {raceResults.map((race) => (
+                  {races.map((race) => (
                     <TableRow key={race.round} hover>
                       <TableCell>
                         <Chip label={`R${race.round}`} size="small" color="primary" />
@@ -93,7 +109,7 @@ function Resultados() {
                       {teams.slice(0, 6).map((team) => (
                         <Stack direction="row" alignItems="center" justifyContent="space-between" key={team.slug}>
                           <Stack direction="row" spacing={1.2} alignItems="center">
-                            <Box sx={{ bgcolor: team.color, borderRadius: 999, height: 12, width: 12 }} />
+                            <Box sx={{ bgcolor: getTeamVisual(team.slug).color, borderRadius: 999, height: 12, width: 12 }} />
                             <Typography sx={{ fontWeight: 900 }}>{team.name}</Typography>
                           </Stack>
                           <Typography sx={{ color: 'secondary.main', fontWeight: 900 }}>{team.points}</Typography>
@@ -105,7 +121,7 @@ function Resultados() {
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid>}
 
         <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>
           Fuente: <Box component="a" href={sourceLinks.results} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>formula1.com/en/results/2026/races</Box>

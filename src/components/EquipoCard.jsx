@@ -84,7 +84,7 @@ function EquipoCard({ team, driverMap }) {
               {teamDrivers.map((driver) => (
                 <Chip
                   key={driver.id}
-                  avatar={<Avatar src={driver.image} alt={driver.name} />}
+                  avatar={<Avatar src={driver.image} alt={driver.name} imgProps={{ loading: 'lazy' }} sx={{ height: 34, width: 34 }} />}
                   label={`${driver.name.split(' ').at(-1).toUpperCase()} · ${driver.points} pts`}
                   sx={{
                     bgcolor: 'rgba(0,0,0,.24)',
@@ -120,16 +120,13 @@ function EquipoCard({ team, driverMap }) {
         />
 
         <Grid container spacing={1.2} sx={{ mt: { xs: 1, md: -1 } }}>
+          <Grid item xs={6} sm={3}><InfoPill label="Victorias" value={team.wins} /></Grid>
+          <Grid item xs={6} sm={3}><InfoPill label="Posición" value={`P${team.position}`} /></Grid>
           <Grid item xs={6} sm={3}><InfoPill label="Motor" value={team.engine} /></Grid>
           <Grid item xs={6} sm={3}><InfoPill label="Chasis" value={team.chassis} /></Grid>
-          <Grid item xs={6} sm={3}><InfoPill label="Podios" value={team.podiums} /></Grid>
-          <Grid item xs={6} sm={3}><InfoPill label="Jefe" value={team.chief} /></Grid>
         </Grid>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} alignItems={{ xs: 'stretch', sm: 'center' }} justifyContent="space-between" sx={{ mt: 1.6 }}>
-          <Typography sx={{ color: 'rgba(255,255,255,.76)', fontWeight: 800 }}>
-            {team.base} · {team.fullName}
-          </Typography>
+        <Stack direction="row" spacing={1.2} justifyContent="flex-end" sx={{ mt: 1.6 }}>
           <Button
             href={`https://www.formula1.com/en/teams/${officialSlug}`}
             target="_blank"

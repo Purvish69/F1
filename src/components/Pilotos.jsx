@@ -11,19 +11,27 @@ import {
   Typography
 } from '@mui/material';
 import PilotoCard from './PilotoCard.jsx';
-import { drivers, sourceLinks, teams } from '../data/f1Data.js';
+import { sourceLinks } from '../data/f1Data.js';
+import { useChampionship } from '../hooks/useChampionship.js';
+import { getDriverPortrait, getTeamVisual } from '../data/visualMetadata.js';
+import { ErrorState, LoadingState } from './ApiStatus.jsx';
+
+const EMPTY_LIST = [];
 
 function Pilotos() {
   const [teamFilter, setTeamFilter] = useState('all');
+  const { data, loading, error, refresh } = useChampionship();
+  const drivers = data?.drivers ?? EMPTY_LIST;
+  const teams = data?.teams ?? EMPTY_LIST;
 
   const filteredDrivers = useMemo(
     () => teamFilter === 'all' ? drivers : drivers.filter((driver) => driver.teamSlug === teamFilter),
-    [teamFilter]
+    [teamFilter, drivers]
   );
 
   const teamBySlug = useMemo(
-    () => Object.fromEntries(teams.map((team) => [team.slug, team])),
-    []
+    () => Object.fromEntries(teams.map((team) => [team.slug, { ...team, ...getTeamVisual(team.slug) }])),
+    [teams]
   );
 
   return (
@@ -38,7 +46,7 @@ function Pilotos() {
               Pilotos
             </Typography>
             <Typography sx={{ color: 'text.secondary', maxWidth: 760 }}>
-              Datos de standings, puntos y rendimiento basados en la página oficial de pilotos y resultados de Formula 1.
+              Clasificación y puntos de Jolpica, con retratos oficiales de alta resolución.
             </Typography>
           </Box>
           <Paper
@@ -71,13 +79,15 @@ function Pilotos() {
           </Paper>
         </Stack>
 
-        <Grid container spacing={2.5}>
+        {loading && <LoadingState label="Cargando pilotos..." cards={4} />}
+        {error && !data && <ErrorState error={error} onRetry={refresh} />}
+        {!loading && !error && <Grid container spacing={2.5}>
           {filteredDrivers.map((pilot) => (
             <Grid item xs={12} sm={6} lg={4} xl={3} key={pilot.id}>
-              <PilotoCard pilot={pilot} team={teamBySlug[pilot.teamSlug]} />
+              <PilotoCard pilot={{ ...pilot, image: getDriverPortrait(pilot.number, pilot.teamSlug, pilot.id) }} team={teamBySlug[pilot.teamSlug] || getTeamVisual(pilot.teamSlug)} maxPoints={drivers[0]?.points || 1} />
             </Grid>
           ))}
-        </Grid>
+        </Grid>}
 
         <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>
           Fuente: <Box component="a" href={sourceLinks.drivers} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>formula1.com/en/drivers</Box>

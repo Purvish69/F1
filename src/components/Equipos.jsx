@@ -1,12 +1,21 @@
 import { useMemo } from 'react';
 import { Box, Container, Grid, Stack, Typography } from '@mui/material';
 import EquipoCard from './EquipoCard.jsx';
-import { drivers, sourceLinks, teams } from '../data/f1Data.js';
+import { sourceLinks } from '../data/f1Data.js';
+import { useChampionship } from '../hooks/useChampionship.js';
+import { getDriverPortrait, getTeamVisual } from '../data/visualMetadata.js';
+import { ErrorState, LoadingState } from './ApiStatus.jsx';
 
 function Equipos() {
+  const { data, loading, error, refresh } = useChampionship();
+  const drivers = data?.drivers || [];
+  const teams = data?.teams || [];
   const driverMap = useMemo(
-    () => Object.fromEntries(drivers.map((driver) => [driver.name, driver])),
-    []
+    () => Object.fromEntries(drivers.map((driver) => [driver.name, {
+      ...driver,
+      image: getDriverPortrait(driver.number, driver.teamSlug, driver.id)
+    }])),
+    [drivers]
   );
 
   return (
@@ -32,13 +41,15 @@ function Equipos() {
           </Typography>
         </Stack>
 
-        <Grid container spacing={2.5}>
+        {loading && <LoadingState label="Cargando constructores..." cards={4} />}
+        {error && !data && <ErrorState error={error} onRetry={refresh} />}
+        {!loading && !error && <Grid container spacing={2.5}>
           {teams.map((team) => (
             <Grid item xs={12} lg={6} key={team.slug}>
-              <EquipoCard team={team} driverMap={driverMap} />
+              <EquipoCard team={{ ...team, ...getTeamVisual(team.slug), drivers: drivers.filter((driver) => driver.teamSlug === team.slug).map((driver) => driver.name) }} driverMap={driverMap} />
             </Grid>
           ))}
-        </Grid>
+        </Grid>}
 
         <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>
           Fuente: <Box component="a" href={sourceLinks.teams} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>formula1.com/en/teams</Box>

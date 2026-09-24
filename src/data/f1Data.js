@@ -1,3 +1,6 @@
+// Legacy data kept temporarily for the visual gallery and navigation. Competition
+// exports below are no longer consumed by the React sections: standings, drivers,
+// constructors, calendar and race results now come from src/api/jolpica.js.
 const mediaBase = 'https://media.formula1.com/image/upload';
 
 const driverImage = (teamSlug, code) =>

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   Box,
@@ -24,8 +25,8 @@ function Stat({ label, value }) {
   );
 }
 
-function PilotoCard({ pilot, team }) {
-  const maxPoints = 131;
+function PilotoCard({ pilot, team, maxPoints = pilot.points || 1 }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Card
@@ -96,11 +97,15 @@ function PilotoCard({ pilot, team }) {
           {pilot.number}
         </Typography>
         <Box
-          component="img"
+          component={motion.img}
           className="driver-photo"
           src={pilot.image}
           alt={pilot.name}
           loading="lazy"
+          initial={{ opacity: 0, scale: .96, x: 18 }}
+          animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : .96, x: imageLoaded ? 0 : 18 }}
+          transition={{ duration: .45, ease: 'easeOut' }}
+          onLoad={() => setImageLoaded(true)}
           sx={{
             bottom: 0,
             height: { xs: 256, sm: 272 },
@@ -148,12 +153,9 @@ function PilotoCard({ pilot, team }) {
         </Stack>
         <Divider sx={{ my: 2 }} />
         <Grid container spacing={1.5}>
-          <Grid item xs={4}><Stat label="Wins" value={pilot.wins} /></Grid>
-          <Grid item xs={4}><Stat label="Podios" value={pilot.podiums} /></Grid>
-          <Grid item xs={4}><Stat label="Poles" value={pilot.poles} /></Grid>
-          <Grid item xs={4}><Stat label="Top 10" value={pilot.top10} /></Grid>
-          <Grid item xs={4}><Stat label="Sprint pts" value={pilot.sprintPoints} /></Grid>
-          <Grid item xs={4}><Stat label="DNF" value={pilot.dnfs} /></Grid>
+          <Grid item xs={4}><Stat label="Victorias" value={pilot.wins} /></Grid>
+          <Grid item xs={4}><Stat label="Posición" value={`P${pilot.position}`} /></Grid>
+          <Grid item xs={4}><Stat label="Código" value={pilot.short} /></Grid>
         </Grid>
         <Button
           fullWidth

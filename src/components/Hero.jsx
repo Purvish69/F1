@@ -1,16 +1,26 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SpeedIcon from '@mui/icons-material/Speed';
-import { Box, Button, Chip, Container, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Chip, Container, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import { drivers, raceResults, seasonKpis, sourceLinks, teams } from '../data/f1Data.js';
+import { sourceLinks } from '../data/f1Data.js';
+import { useChampionship } from '../hooks/useChampionship.js';
+import { getTeamVisual } from '../data/visualMetadata.js';
 
 const MotionBox = motion(Box);
 
 function Hero() {
-  const leader = drivers[0];
-  const leadingTeam = teams[0];
-  const lastRace = raceResults.at(-1);
+  const { data, loading } = useChampionship();
+  const leader = data?.drivers[0];
+  const leadingTeam = data?.teams[0];
+  const lastRace = data?.races.at(-1);
+  const leadingVisual = leadingTeam && getTeamVisual(leadingTeam.slug);
+  const kpis = leader && leadingTeam ? [
+    { label: 'Carreras programadas', value: data.races.length, detail: 'Calendario Jolpica' },
+    { label: 'Líder pilotos', value: leader.short, detail: `${leader.points} puntos` },
+    { label: 'Líder equipos', value: leadingTeam.name, detail: `${leadingTeam.points} puntos` },
+    { label: 'Última cita', value: lastRace?.raceName || '—', detail: lastRace?.date || 'Calendario activo' }
+  ] : [];
 
   return (
     <Box
@@ -42,8 +52,8 @@ function Hero() {
           <Grid item xs={12} md={6.2}>
             <MotionBox initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7 }}>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 3 }}>
-                <Chip icon={<SpeedIcon />} color="primary" label="Temporada 2026 en vivo" />
-                <Chip icon={<EmojiEventsIcon />} label={`${leader.name} lidera con ${leader.points} pts`} variant="outlined" />
+                <Chip icon={<SpeedIcon />} color="primary" label="Temporada 2026" />
+                {leader ? <Chip icon={<EmojiEventsIcon />} label={`${leader.name} lidera con ${leader.points} pts`} variant="outlined" /> : <Skeleton width={220} />}
               </Stack>
               <Typography variant="overline" sx={{ color: 'secondary.main', fontWeight: 800, letterSpacing: '.24em' }}>
                 FIA Formula One World Championship
@@ -90,12 +100,12 @@ function Hero() {
                 {/* Logica de seccion: hero combina el coche lider y el estado real de la temporada. */}
                 <Box
                   component="img"
-                  src={leadingTeam.car}
-                  alt="Mercedes 2026 F1 car"
+                  src={leadingVisual?.car}
+                  alt={leadingTeam ? `${leadingTeam.name} 2026 F1 car` : 'Coche de Fórmula 1'}
                   sx={{ filter: 'drop-shadow(0 24px 52px rgba(0,210,190,.24))', mx: 'auto', width: '100%' }}
                 />
                 <Grid container spacing={2} sx={{ mt: 2 }}>
-                  {seasonKpis.map((kpi) => (
+                  {(loading ? Array.from({ length: 4 }, (_, index) => ({ label: `Cargando ${index}`, value: '…', detail: 'Cargando datos...' })) : kpis).map((kpi) => (
                     <Grid item xs={6} key={kpi.label}>
                       <Paper variant="outlined" sx={{ bgcolor: 'rgba(255,255,255,.04)', p: 2 }}>
                         <Typography variant="h4" sx={{ color: 'common.white', lineHeight: .9 }}>
@@ -118,8 +128,8 @@ function Hero() {
                     p: 2
                   }}
                 >
-                  <Typography sx={{ fontWeight: 800 }}>Última carrera: {lastRace.grandPrix}</Typography>
-                  <Typography sx={{ color: 'secondary.main', fontWeight: 800 }}>{lastRace.winner}</Typography>
+                  <Typography sx={{ fontWeight: 800 }}>Próxima/última cita: {lastRace?.raceName || 'Cargando...'}</Typography>
+                  <Typography sx={{ color: 'secondary.main', fontWeight: 800 }}>{lastRace?.date || '—'}</Typography>
                 </Paper>
               </Paper>
             </MotionBox>

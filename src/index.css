@@ -57,7 +57,7 @@ section[id] {
 .rb-racing-grid { background-image: linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px); background-size: 56px 56px; inset: 0; mask-image: linear-gradient(to bottom, black, transparent 82%); opacity: .28; pointer-events: none; position: absolute; }
 @keyframes rb-shine { to { background-position: -220% 0; } }
 
-.premium-hero { background: radial-gradient(ellipse 58% 55% at 77% 39%, rgba(232,0,45,.22), transparent 68%), radial-gradient(circle at 13% 11%, rgba(255,255,255,.075), transparent 22rem), #050505; isolation: isolate; min-height: 100vh; overflow: hidden; padding: clamp(112px, 12vw, 158px) 0 clamp(74px, 9vw, 116px); position: relative; }
+.premium-hero { background: radial-gradient(ellipse 58% 55% at 77% 39%, rgba(232,0,45,.22), transparent 68%), radial-gradient(circle at 13% 11%, rgba(255,255,255,.075), transparent 22rem), #050505; isolation: isolate; min-height: 110vh; overflow: hidden; padding: clamp(112px, 12vw, 158px) 0 clamp(98px, 11vw, 148px); position: relative; }
 .hero-orbit { border: 1px solid rgba(255,255,255,.08); border-radius: 50%; pointer-events: none; position: absolute; }
 .hero-orbit-one { height: 900px; right: -460px; top: -175px; width: 900px; }
 .hero-orbit-two { border-color: rgba(232,0,45,.22); height: 620px; right: -160px; top: 18%; width: 620px; }
@@ -71,8 +71,8 @@ section[id] {
 .hero-actions .MuiButton-root { font-weight: 800; letter-spacing: .04em; padding: 11px 22px; }
 .hero-machine-card { border-radius: 16px; padding: clamp(14px, 2vw, 22px); transform-style: preserve-3d; transition: transform .28s ease-out; }
 .machine-hud { color: rgba(255,255,255,.62); display: flex; font-size: .68rem; font-weight: 800; justify-content: space-between; letter-spacing: .14em; }
-.hero-car-stage { align-items: center; display: flex; min-height: clamp(215px, 26vw, 330px); position: relative; }
-.hero-car { filter: drop-shadow(0 28px 28px rgba(0,0,0,.62)) drop-shadow(0 0 30px rgba(232,0,45,.28)); position: relative; transform: translateZ(35px); width: 100%; z-index: 1; }
+.hero-car-stage { align-items: center; display: flex; min-height: clamp(260px, 30vw, 390px); position: relative; }
+.hero-car { filter: drop-shadow(0 28px 28px rgba(0,0,0,.62)) drop-shadow(0 0 30px rgba(232,0,45,.28)); position: relative; transform: translate3d(5%, -2%, 35px); width: 108%; z-index: 1; }
 .car-shadow { background: radial-gradient(ellipse, rgba(0,0,0,.88), transparent 67%); bottom: 12%; height: 21%; left: 17%; position: absolute; width: 66%; }
 .car-scanline { background: linear-gradient(90deg, transparent, rgba(255,255,255,.34), transparent); height: 1px; left: 5%; opacity: .65; position: absolute; right: 5%; top: 48%; }
 .hud-bottom { border-top: 1px solid rgba(255,255,255,.12); padding-top: 9px; }

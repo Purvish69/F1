@@ -41,7 +41,7 @@ function Hero() {
           <MotionBox initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: reducedMotion ? 0 : .08 }}>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap className="hero-chips"><Chip icon={<SpeedIcon />} color="primary" label="TEMPORADA 2026" />{leader ? <Chip icon={<EmojiEventsIcon />} label={`${leader.name} · ${leader.points} PTS`} variant="outlined" /> : <Skeleton width={210} />}</Stack>
             <Typography variant="overline" className="hero-kicker">FIA FORMULA ONE WORLD CHAMPIONSHIP</Typography>
-            <Typography variant="h1" className="hero-title">F1 <ShinyText className="hero-title-accent">GARAGE</ShinyText></Typography>
+            <Typography variant="h1" className="hero-title">F1 <ShinyText className="hero-title-accent">2026</ShinyText></Typography>
             <Typography className="hero-copy">Datos oficiales, clasificaciones y calendario 2026. Una lectura clara de la parrilla, con la pista siempre en primer plano.</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} className="hero-actions"><Button href="#pilotos" size="large" variant="contained" endIcon={<ArrowForwardIcon />}>Explorar pilotos</Button><Button href={sourceLinks.results} target="_blank" rel="noreferrer" size="large" variant="outlined">Fuente oficial F1</Button></Stack>
           </MotionBox>
@@ -49,7 +49,7 @@ function Hero() {
         <Grid item xs={12} md={5.85}>
           <MotionBox initial={{ opacity: 0, scale: .96, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: reducedMotion ? 0 : .82, delay: reducedMotion ? 0 : .18 }} style={{ transform: isMobile || reducedMotion ? undefined : `perspective(1100px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}>
             <SpotlightCard className="hero-machine-card">
-              <div className="machine-hud hud-top"><span>LIVE / 2026</span><span>DATA GARAGE</span></div>
+              <div className="machine-hud hud-top"><span>LIVE / 2026</span><span>F1 2026</span></div>
               <div className="hero-car-stage"><div className="car-shadow" /><Box component="img" src={leadingVisual?.car} alt={leadingTeam ? `Monoplaza de ${leadingTeam.name}` : 'Coche de Fórmula 1'} className="hero-car" /><div className="car-scanline" /></div>
               <div className="machine-hud hud-bottom"><span>{leadingTeam?.name || 'Cargando equipo'}</span><span>POS 01</span></div>
               <Grid container spacing={1.25} className="hero-telemetry">{(loading ? Array.from({ length: 4 }, (_, index) => ({ label: `CARGANDO ${index + 1}`, value: '…', detail: 'Datos en directo' })) : telemetry).map((metric) => <Grid item xs={6} key={metric.label}><div className="telemetry-cell"><div className="telemetry-value">{metric.prefix}{metric.numeric && typeof metric.value === 'number' ? <CountUp value={metric.value} /> : metric.value}{metric.suffix}</div><div className="telemetry-label">{metric.label}</div><div className="telemetry-detail">{metric.detail}</div></div></Grid>)}</Grid>

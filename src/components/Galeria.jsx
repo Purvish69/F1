@@ -61,9 +61,10 @@ function Galeria() {
                     loading="lazy"
                     sx={{
                       bgcolor: 'rgba(255,255,255,.04)',
-                      height: item.caption.includes('Mercedes') || item.caption.includes('Ferrari') || item.caption.includes('McLaren') || item.caption.includes('Red Bull') ? 220 : 420,
-                      objectFit: 'contain',
-                      p: 2,
+                      height: item.type === 'car' ? 220 : 420,
+                      objectFit: item.type === 'car' ? 'contain' : 'cover',
+                      objectPosition: 'top center',
+                      p: item.type === 'car' ? 2 : 0,
                       transition: 'transform .35s ease',
                       '&:hover': { transform: 'scale(1.04)' }
                     }}

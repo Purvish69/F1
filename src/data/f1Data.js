@@ -1,6 +1,8 @@
 // Legacy data kept temporarily for the visual gallery and navigation. Competition
 // exports below are no longer consumed by the React sections: standings, drivers,
 // constructors, calendar and race results now come from src/api/jolpica.js.
+import { getDriverPortrait } from './visualMetadata.js';
+
 const mediaBase = 'https://media.formula1.com/image/upload';
 
 const driverImage = (teamSlug, code) =>
@@ -24,14 +26,6 @@ export const sourceLinks = {
   driverStandings: 'https://www.formula1.com/en/results/2026/drivers',
   teamStandings: 'https://www.formula1.com/en/results/2026/team'
 };
-
-export const raceResults = [
-  { round: 1, grandPrix: 'Australia', date: '08 Mar', winner: 'George Russell', code: 'RUS', team: 'Mercedes', laps: 58, time: '1:23:06.801' },
-  { round: 2, grandPrix: 'China', date: '15 Mar', winner: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', laps: 56, time: '1:33:15.607' },
-  { round: 3, grandPrix: 'Japan', date: '29 Mar', winner: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', laps: 53, time: '1:28:03.403' },
-  { round: 4, grandPrix: 'Miami', date: '03 May', winner: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', laps: 57, time: '1:33:19.273' },
-  { round: 5, grandPrix: 'Canada', date: '24 May', winner: 'Kimi Antonelli', code: 'ANT', team: 'Mercedes', laps: 68, time: '1:28:15.758' }
-];
 
 export const drivers = [
   { id: 'andant01', slug: 'kimi-antonelli', name: 'Kimi Antonelli', short: 'ANT', number: 12, team: 'Mercedes', teamSlug: 'mercedes', nationality: 'Italy', flag: '🇮🇹', position: 1, points: 131, races: 5, gpPoints: 118, wins: 4, podiums: 5, poles: 3, top10: 5, fastestLaps: 0, dnfs: 0, sprintPoints: 13, careerPoints: 281, championships: 0, image: driverImage('mercedes', 'andant01') },
@@ -80,12 +74,12 @@ export const seasonKpis = [
 ];
 
 export const galleryImages = [
-  { src: carImage('mercedes'), caption: 'Mercedes W17' },
-  { src: carImage('ferrari'), caption: 'Ferrari SF-26' },
-  { src: carImage('mclaren'), caption: 'McLaren MCL40' },
-  { src: carImage('redbullracing'), caption: 'Red Bull RB22' },
-  { src: driverImage('mercedes', 'andant01'), caption: 'Kimi Antonelli' },
-  { src: driverImage('ferrari', 'lewham01'), caption: 'Lewis Hamilton' },
-  { src: driverImage('mclaren', 'lannor01'), caption: 'Lando Norris' },
-  { src: driverImage('redbullracing', 'maxver01'), caption: 'Max Verstappen' }
+  { src: carImage('mercedes'), caption: 'Mercedes W17', type: 'car' },
+  { src: carImage('ferrari'), caption: 'Ferrari SF-26', type: 'car' },
+  { src: carImage('mclaren'), caption: 'McLaren MCL40', type: 'car' },
+  { src: carImage('redbullracing'), caption: 'Red Bull RB22', type: 'car' },
+  { src: getDriverPortrait(12, 'mercedes', 'andant01'), caption: 'Kimi Antonelli', type: 'driver' },
+  { src: getDriverPortrait(44, 'ferrari', 'lewham01'), caption: 'Lewis Hamilton', type: 'driver' },
+  { src: getDriverPortrait(1, 'mclaren', 'lannor01'), caption: 'Lando Norris', type: 'driver' },
+  { src: getDriverPortrait(3, 'red_bull', 'maxver01'), caption: 'Max Verstappen', type: 'driver' }
 ];

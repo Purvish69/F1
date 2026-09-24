@@ -6,6 +6,7 @@ import Equipos from './components/Equipos.jsx';
 import Resultados from './components/Resultados.jsx';
 import Galeria from './components/Galeria.jsx';
 import Footer from './components/Footer.jsx';
+import Intro from './components/Intro.jsx';
 
 const theme = createTheme({
   palette: {
@@ -52,6 +53,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* <Intro /> */}
       <Navbar />
       <main>
         <Hero />

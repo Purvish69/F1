@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Container, Stack, Typography } from '@mui/material';
 import EquipoCard from './EquipoCard.jsx';
 import { sourceLinks } from '../data/f1Data.js';
 import { useChampionship } from '../hooks/useChampionship.js';
@@ -36,20 +36,24 @@ function Equipos() {
           <Typography variant="h2" sx={{ fontSize: { xs: 56, md: 92 }, lineHeight: .85 }}>
             Equipos
           </Typography>
-          <Typography sx={{ color: 'text.secondary', maxWidth: 760 }}>
+          {/* <Typography sx={{ color: 'text.secondary', maxWidth: 760 }}>
             Clasificación, coche real, puntos, pilotos, base, motor, chasis y estructura técnica de cada escudería.
-          </Typography>
+          </Typography> */}
         </Stack>
 
         {loading && <LoadingState label="Cargando constructores..." cards={4} />}
         {error && !data && <ErrorState error={error} onRetry={refresh} />}
-        {!loading && !error && <Grid container spacing={2.5}>
+        {!loading && !error && <Box sx={{ display: 'grid', gap: 2.5, gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' } }}>
           {teams.map((team) => (
-            <Grid item xs={12} lg={6} key={team.slug}>
-              <EquipoCard team={{ ...team, ...getTeamVisual(team.slug), drivers: drivers.filter((driver) => driver.teamSlug === team.slug).map((driver) => driver.name) }} driverMap={driverMap} />
-            </Grid>
+            <Box key={team.slug}>
+              <EquipoCard
+                team={{ ...team, ...getTeamVisual(team.slug), drivers: drivers.filter((driver) => driver.teamSlug === team.slug).map((driver) => driver.name) }}
+                driverMap={driverMap}
+                leaderPoints={teams[0]?.points}
+              />
+            </Box>
           ))}
-        </Grid>}
+        </Box>}
 
         <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>
           Fuente: <Box component="a" href={sourceLinks.teams} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>formula1.com/en/teams</Box>

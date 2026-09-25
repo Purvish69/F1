@@ -53,7 +53,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Intro />
+      {/* <Intro /> */}
       <Navbar />
       <main>
         <Hero />

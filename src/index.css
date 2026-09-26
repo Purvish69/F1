@@ -64,8 +64,8 @@ section[id] {
 .hero-chips { margin-bottom: 25px; }
 .hero-chips .MuiChip-root { backdrop-filter: blur(10px); font-weight: 800; letter-spacing: .04em; }
 .hero-kicker { color: var(--color-gold); font-weight: 800; letter-spacing: .21em; }
-.hero-title { font-size: clamp(5rem, 12vw, 12rem) !important; line-height: .75 !important; margin-top: 12px !important; text-shadow: 0 0 56px rgba(232,0,45,.2); }
-.hero-title-accent { display: block; }
+.hero-title { font-size: clamp(5rem, 12vw, 12rem) !important; line-height: .9 !important; margin-top: 12px !important; text-shadow: 0 0 56px rgba(232,0,45,.2); }
+.hero-title-accent { display: block; padding-top: 0.04em; padding-bottom: 0.02em; }
 .hero-copy { color: #c1c6ce; font-size: clamp(1.05rem, 1.8vw, 1.35rem) !important; line-height: 1.42 !important; margin-top: 30px !important; max-width: 620px; }
 .hero-actions { margin-top: 34px; }
 .hero-actions .MuiButton-root { font-weight: 800; letter-spacing: .04em; padding: 11px 22px; }

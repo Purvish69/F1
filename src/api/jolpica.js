@@ -39,22 +39,73 @@ export async function getResults(season, round, options) {
 }
 
 export async function getSeasonRaces(season, options) {
-  return cachedRequest(`jolpica:${season}:season-races`, SEASON_RACES_TTL, async () => {
-    const [schedule, results] = await Promise.all([getRaces(season, options), getResults(season, undefined, options)]);
+  return cachedRequest(`jolpica:${season}:season-races`, TTL.results, async () => {
+    const [schedule, results] = await Promise.all([
+      getRaces(season, options),
+      getResults(season, undefined, options)
+    ]);
     const resultsByRound = Object.fromEntries(results.map((race) => [String(race.round), race]));
 
     return schedule.map((race) => {
       const completedRace = resultsByRound[String(race.round)];
-      const winner = completedRace?.Results?.[0];
+      const raceResults = completedRace?.Results || [];
+      const winner = raceResults[0];
+      const fastestLap = raceResults.find((r) => r.FastestLap?.rank === '1');
+
+      const podium = raceResults.slice(0, 3).map((res) => ({
+        pos: Number(res.position),
+        name: `${res.Driver.givenName} ${res.Driver.familyName}`,
+        code: res.Driver.code || res.Driver.familyName.slice(0, 3).toUpperCase(),
+        number: res.Driver.permanentNumber || res.number,
+        driverId: res.Driver.driverId,
+        team: res.Constructor.name,
+        teamSlug: res.Constructor.constructorId,
+        points: Number(res.points),
+        time: res.Time?.time || res.status
+      }));
+
+      const top10 = raceResults.slice(0, 10).map((res) => ({
+        pos: Number(res.position),
+        name: `${res.Driver.givenName} ${res.Driver.familyName}`,
+        code: res.Driver.code || res.Driver.familyName.slice(0, 3).toUpperCase(),
+        number: res.Driver.permanentNumber || res.number,
+        driverId: res.Driver.driverId,
+        team: res.Constructor.name,
+        teamSlug: res.Constructor.constructorId,
+        points: Number(res.points),
+        time: res.Time?.time || res.status,
+        grid: res.grid,
+        laps: res.laps,
+        fastestLap: res.FastestLap?.Time?.time
+      }));
+
       return {
         round: Number(race.round),
         grandPrix: race.raceName,
         date: race.date,
+        time: race.time || '',
+        circuit: {
+          id: race.Circuit?.circuitId,
+          name: race.Circuit?.circuitName,
+          locality: race.Circuit?.Location?.locality,
+          country: race.Circuit?.Location?.country
+        },
+        hasResults: Boolean(winner),
         winner: winner ? `${winner.Driver.givenName} ${winner.Driver.familyName}` : '—',
-        code: winner?.Driver.code || '—',
+        winnerNumber: winner?.Driver.permanentNumber || winner?.number,
+        winnerDriverId: winner?.Driver.driverId,
+        code: winner?.Driver.code || (winner ? winner.Driver.familyName.slice(0, 3).toUpperCase() : '—'),
         team: winner?.Constructor.name || '—',
+        teamSlug: winner?.Constructor.constructorId || 'unknown',
         laps: winner?.laps || '—',
-        time: winner?.Time?.time || '—'
+        raceTime: winner?.Time?.time || '—',
+        fastestLap: fastestLap ? {
+          driver: `${fastestLap.Driver.givenName} ${fastestLap.Driver.familyName}`,
+          time: fastestLap.FastestLap.Time.time,
+          lap: fastestLap.FastestLap.lap
+        } : null,
+        podium,
+        top10
       };
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
   }, { force: options?.force });

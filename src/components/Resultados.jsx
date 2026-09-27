@@ -1,7 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloseIcon from '@mui/icons-material/Close';
-import { Avatar, Box, Button, Card, CardActionArea, Chip, Container, IconButton, Paper, Stack, Typography } from '@mui/material';
+import SyncIcon from '@mui/icons-material/Sync';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  Chip,
+  Container,
+  IconButton,
+  Stack,
+  Typography
+} from '@mui/material';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { sourceLinks } from '../data/f1Data.js';
 import { useChampionship } from '../hooks/useChampionship.js';
@@ -10,29 +25,87 @@ import { getDriverPortrait, getTeamVisual } from '../data/visualMetadata.js';
 import { ErrorState, LoadingState } from './ApiStatus.jsx';
 
 const MotionBox = motion(Box);
-const initials = (name) => name.split(' ').map((part) => part[0]).join('').slice(0, 2);
+const initials = (name) =>
+  name
+    ? name
+        .split(' ')
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+    : 'F1';
+
+const gpFlags = {
+  'Australian Grand Prix': '🇦🇺',
+  'Chinese Grand Prix': '🇨🇳',
+  'Japanese Grand Prix': '🇯🇵',
+  'Miami Grand Prix': '🇺🇸',
+  'Canadian Grand Prix': '🇨🇦',
+  'Monaco Grand Prix': '🇲🇨',
+  'Spanish Grand Prix': '🇪🇸',
+  'Barcelona Grand Prix': '🇪🇸',
+  'Austrian Grand Prix': '🇦🇹',
+  'British Grand Prix': '🇬🇧',
+  'Hungarian Grand Prix': '🇭🇺',
+  'Belgian Grand Prix': '🇧🇪',
+  'Dutch Grand Prix': '🇳🇱',
+  'Italian Grand Prix': '🇮🇹',
+  'Azerbaijan Grand Prix': '🇦🇿',
+  'Singapore Grand Prix': '🇸🇬',
+  'United States Grand Prix': '🇺🇸',
+  'Mexico City Grand Prix': '🇲🇽',
+  'Sao Paulo Grand Prix': '🇧🇷',
+  'Las Vegas Grand Prix': '🇺🇸',
+  'Qatar Grand Prix': '🇶🇦',
+  'Abu Dhabi Grand Prix': '🇦🇪',
+  'Bahrain Grand Prix': '🇧🇭',
+  'Saudi Arabian Grand Prix': '🇸🇦',
+  'Emilia Romagna Grand Prix': '🇮🇹'
+};
 
 function Resultados() {
   const championship = useChampionship();
-  const season = useSeason();
+  const season = useSeason('2026', { autoRefreshInterval: 60_000 });
   const reducedMotion = useReducedMotion();
+
+  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'completed' | 'upcoming'
   const [showAllRaces, setShowAllRaces] = useState(false);
   const [selectedRace, setSelectedRace] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const races = season.data || [];
   const drivers = championship.data?.drivers || [];
   const teams = championship.data?.teams || [];
-  const visibleRaces = showAllRaces ? races : races.slice(0, 10);
+
+  const completedRacesCount = useMemo(() => races.filter((r) => r.hasResults).length, [races]);
+  const upcomingRacesCount = useMemo(() => races.filter((r) => !r.hasResults).length, [races]);
+
+  const filteredRaces = useMemo(() => {
+    if (activeFilter === 'completed') return races.filter((r) => r.hasResults);
+    if (activeFilter === 'upcoming') return races.filter((r) => !r.hasResults);
+    return races;
+  }, [races, activeFilter]);
+
+  const visibleRaces = showAllRaces ? filteredRaces : filteredRaces.slice(0, 9);
   const isLoading = championship.loading || season.loading;
   const error = championship.error || season.error;
-  const teamFor = (race) => teams.find((team) => team.name === race.team);
+
   const colorFor = (race) => {
-    const team = teamFor(race);
-    return team ? getTeamVisual(team.slug).color : '#5E6570';
+    if (!race || !race.hasResults) return '#5E6570';
+    const visual = getTeamVisual(race.teamSlug);
+    return visual?.color || '#E8002D';
   };
-  const driverFor = (race) => drivers.find((driver) => driver.name === race.winner);
-  const portraitFor = (race) => {
-    const driver = driverFor(race);
-    return driver && getDriverPortrait(driver.number, driver.teamSlug, driver.id);
+
+  const portraitForDriver = (driverNumber, teamSlug, driverId) => {
+    return getDriverPortrait(driverNumber, teamSlug, driverId);
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    await Promise.all([
+      championship.refresh(true),
+      season.refresh(true)
+    ]);
+    setTimeout(() => setIsRefreshing(false), 600);
   };
 
   useEffect(() => {
@@ -41,46 +114,396 @@ function Resultados() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  return <Box component="section" id="resultados" sx={{ py: { xs: 8, md: 12 } }}>
-    <Container maxWidth="xl">
-      <Stack spacing={1} sx={{ mb: 4 }}>
-        <Typography variant="overline" sx={{ color: 'secondary.main', fontWeight: 900, letterSpacing: '.18em' }}>Resultados oficiales</Typography>
-        <Typography variant="h2" sx={{ fontSize: { xs: 56, md: 92 }, lineHeight: .85 }}>Resultados 2026</Typography>
-        <Typography sx={{ color: 'text.secondary' }}>Calendario y resultados de la temporada.</Typography>
-      </Stack>
+  return (
+    <Box
+      component="section"
+      id="resultados"
+      sx={{
+        background:
+          'radial-gradient(circle at 10% 20%, rgba(232,0,45,.12), transparent 28rem), radial-gradient(circle at 90% 80%, rgba(255,215,0,.06), transparent 30rem), #060609',
+        py: { xs: 8, md: 12 },
+        position: 'relative'
+      }}
+    >
+      <Container maxWidth="xl">
+        {/* Header & Live API Status Bar */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'flex-start', md: 'flex-end' },
+            gap: 2.5,
+            mb: 4.5
+          }}
+        >
+          <Stack spacing={1}>
+            <Typography variant="overline" sx={{ color: 'secondary.main', fontWeight: 900, letterSpacing: '.18em' }}>
+              RESULTADOS OFICIALES FIA
+            </Typography>
+            <Typography variant="h2" sx={{ fontSize: { xs: 56, md: 92 }, lineHeight: .85 }}>
+              Resultados 2026
+            </Typography>
+            <Typography sx={{ color: 'text.secondary', maxWidth: 700 }}>
+              Calendario oficial y clasificación de cada Gran Premio sincronizados en tiempo real mediante la API oficial de Formula 1 (Jolpica / Ergast).
+            </Typography>
+          </Stack>
 
-      {isLoading && <LoadingState label="Cargando resultados y clasificación..." cards={4} />}
-      {error && !championship.data && <ErrorState error={error} onRetry={() => { championship.refresh(); season.refresh(); }} />}
-      {!isLoading && championship.data && <>
-        <Box sx={{ display: 'grid', gap: 2.5, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', lg: 'repeat(3, minmax(0, 1fr))' } }}>
-          {visibleRaces.map((race, index) => {
-            const hasWinner = race.winner !== '—';
-            const color = colorFor(race);
-            return <Card component={motion.article} key={race.round} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }} transition={{ duration: reducedMotion ? 0 : .34, delay: reducedMotion ? 0 : Math.min(index * .03, .22) }} sx={{ background: `linear-gradient(145deg, ${hasWinner ? `${color}42` : 'rgba(94,101,112,.28)'}, rgba(7,7,9,.92) 68%)`, border: `1px solid ${hasWinner ? `${color}88` : 'rgba(255,255,255,.14)'}`, boxShadow: `inset 0 1px rgba(255,255,255,.18), 0 18px 44px ${hasWinner ? `${color}22` : 'rgba(0,0,0,.22)'}`, overflow: 'hidden' }}>
-              <CardActionArea onClick={() => setSelectedRace(race)} sx={{ height: '100%', p: 2.2, textAlign: 'left' }}>
-                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}><Chip label={`R${race.round}`} size="small" sx={{ bgcolor: hasWinner ? color : 'rgba(255,255,255,.14)', color: 'common.white', fontWeight: 1000 }} /><Typography sx={{ color: 'rgba(255,255,255,.72)', fontSize: '.76rem', fontWeight: 800 }}>{race.date}</Typography></Stack>
-                <Typography variant="h4" sx={{ fontSize: '2rem', lineHeight: .9, mt: 2, textTransform: 'uppercase' }}>{race.grandPrix}</Typography>
-                {hasWinner ? <Stack direction="row" alignItems="center" spacing={1.25} sx={{ mt: 2.25 }}><Avatar src={portraitFor(race)} alt={race.winner} sx={{ bgcolor: color, height: 48, width: 48, '& img': { objectFit: 'cover', objectPosition: '50% 12%' } }}>{initials(race.winner)}</Avatar><Box sx={{ minWidth: 0 }}><Typography sx={{ color: 'rgba(255,255,255,.65)', fontSize: '.7rem', fontWeight: 900, letterSpacing: '.08em' }}>GANADOR</Typography><Typography sx={{ fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{race.winner}</Typography><Typography sx={{ color, fontSize: '.8rem', fontWeight: 900 }}>{race.team}</Typography></Box></Stack> : <Stack direction="row" alignItems="center" spacing={1.1} sx={{ color: 'rgba(255,255,255,.68)', mt: 2.25 }}><CalendarMonthIcon /><Typography sx={{ fontWeight: 900 }}>Próximamente</Typography></Stack>}
-              </CardActionArea>
-            </Card>;
-          })}
+          {/* Live Sync Badge & Manual Refresh */}
+          <div className="results-live-sync-bar">
+            <div className="results-api-indicator" title="Conexión en vivo a la API oficial">
+              <span className="results-pulse-dot" />
+              <span className="results-api-label">API EN VIVO (AUTO-SYNC 60s)</span>
+            </div>
+
+            <button
+              type="button"
+              className={`results-refresh-btn ${isRefreshing ? 'is-spinning' : ''}`}
+              onClick={handleManualRefresh}
+              title="Actualizar datos oficiales ahora"
+            >
+              <SyncIcon sx={{ fontSize: 16 }} />
+              <span>Actualizar</span>
+            </button>
+          </div>
         </Box>
-        {races.length > 10 && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}><Button onClick={() => setShowAllRaces((value) => !value)} variant="outlined">{showAllRaces ? 'Ver menos' : 'Ver más'}</Button></Box>}
-      </>}
-      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>Fuente: <Box component="a" href={sourceLinks.results} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>formula1.com/en/results/2026/races</Box></Typography>
-    </Container>
 
-    <AnimatePresence>{selectedRace && <MotionBox aria-modal="true" onClick={() => setSelectedRace(null)} role="dialog" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : .2 }} sx={{ alignItems: 'center', backdropFilter: 'blur(12px)', background: 'rgba(0,0,0,.68)', display: 'flex', inset: 0, justifyContent: 'center', p: 2, position: 'fixed', zIndex: 1400 }}>
-      <MotionBox onClick={(event) => event.stopPropagation()} initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} transition={{ duration: reducedMotion ? 0 : .3, ease: 'easeOut' }} sx={{ background: `linear-gradient(145deg, ${selectedRace.winner !== '—' ? `${colorFor(selectedRace)}4f` : 'rgba(74,79,88,.48)'}, #0a0a0d 72%)`, border: `1px solid ${selectedRace.winner !== '—' ? `${colorFor(selectedRace)}99` : 'rgba(255,255,255,.18)'}`, boxShadow: '0 32px 100px rgba(0,0,0,.62)', maxWidth: 580, p: { xs: 2.5, sm: 3.5 }, position: 'relative', width: '100%' }}>
-        <IconButton aria-label="Cerrar resultados" onClick={() => setSelectedRace(null)} sx={{ color: 'common.white', position: 'absolute', right: 12, top: 12 }}><CloseIcon /></IconButton>
-        <Chip label={`RONDA ${selectedRace.round}`} sx={{ bgcolor: selectedRace.winner !== '—' ? colorFor(selectedRace) : 'rgba(255,255,255,.16)', color: 'common.white', fontWeight: 1000 }} />
-        <Typography variant="h3" sx={{ fontSize: 'clamp(2.5rem, 9vw, 4.4rem)', lineHeight: .82, mt: 2 }}>{selectedRace.grandPrix}</Typography><Typography sx={{ color: 'rgba(255,255,255,.72)', fontWeight: 800, mt: 1 }}>{selectedRace.date}</Typography>
-        {selectedRace.winner !== '—' ? <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mt: 3 }}><Avatar src={portraitFor(selectedRace)} sx={{ bgcolor: colorFor(selectedRace), height: 64, width: 64, '& img': { objectFit: 'cover', objectPosition: '50% 12%' } }}>{initials(selectedRace.winner)}</Avatar><Box><Typography sx={{ color: 'rgba(255,255,255,.65)', fontSize: '.72rem', fontWeight: 900, letterSpacing: '.1em' }}>GANADOR</Typography><Typography variant="h5">{selectedRace.winner}</Typography><Typography sx={{ color: colorFor(selectedRace), fontWeight: 900 }}>{selectedRace.team}</Typography></Box></Stack> : <Stack direction="row" alignItems="center" spacing={1.1} sx={{ color: 'rgba(255,255,255,.72)', mt: 3 }}><CalendarMonthIcon /><Typography sx={{ fontWeight: 900 }}>Carrera futura</Typography></Stack>}
-        <Box sx={{ display: 'grid', gap: 1.2, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', mt: 3 }}><Paper sx={{ bgcolor: 'rgba(0,0,0,.28)', p: 1.4 }}><Typography variant="caption">VUELTAS</Typography><Typography variant="h5">{selectedRace.laps}</Typography></Paper><Paper sx={{ bgcolor: 'rgba(0,0,0,.28)', p: 1.4 }}><Typography variant="caption">TIEMPO</Typography><Typography variant="h5">{selectedRace.time}</Typography></Paper></Box>
-        {selectedRace.top3?.length > 0 && <Box sx={{ mt: 3 }}><Typography sx={{ fontWeight: 900, mb: 1 }}>TOP 3</Typography>{selectedRace.top3.map((driver, index) => <Typography key={driver.name}>{index + 1}. {driver.name}</Typography>)}</Box>}
-      </MotionBox>
-    </MotionBox>}</AnimatePresence>
-  </Box>;
+        {/* Filter Tabs Bar */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 3.5 }}>
+          <div className="results-filter-pill-bar" role="tablist" aria-label="Filtrar resultados por estado">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeFilter === 'all'}
+              className={`results-tab-pill ${activeFilter === 'all' ? 'is-active' : ''}`}
+              onClick={() => {
+                setActiveFilter('all');
+                setShowAllRaces(false);
+              }}
+            >
+              <span>🏁 Todas las carreras</span>
+              <span className="pill-counter">{races.length}</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeFilter === 'completed'}
+              className={`results-tab-pill ${activeFilter === 'completed' ? 'is-active' : ''}`}
+              onClick={() => {
+                setActiveFilter('completed');
+                setShowAllRaces(false);
+              }}
+            >
+              <span>🏆 Disputadas</span>
+              <span className="pill-counter">{completedRacesCount}</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeFilter === 'upcoming'}
+              className={`results-tab-pill ${activeFilter === 'upcoming' ? 'is-active' : ''}`}
+              onClick={() => {
+                setActiveFilter('upcoming');
+                setShowAllRaces(false);
+              }}
+            >
+              <span>📅 Próximas Citas</span>
+              <span className="pill-counter">{upcomingRacesCount}</span>
+            </button>
+          </div>
+        </Box>
+
+        {isLoading && <LoadingState label="Cargando resultados y clasificación en directo desde la API..." cards={6} />}
+        {error && !championship.data && <ErrorState error={error} onRetry={handleManualRefresh} />}
+
+        {!isLoading && races.length > 0 && (
+          <>
+            <Box
+              sx={{
+                display: 'grid',
+                gap: 2.5,
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, minmax(0, 1fr))',
+                  lg: 'repeat(3, minmax(0, 1fr))'
+                }
+              }}
+            >
+              {visibleRaces.map((race, index) => {
+                const hasWinner = race.hasResults;
+                const color = colorFor(race);
+                const flag = gpFlags[race.grandPrix] || '🏁';
+
+                return (
+                  <Card
+                    component={motion.article}
+                    key={race.round}
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{
+                      duration: reducedMotion ? 0 : 0.34,
+                      delay: reducedMotion ? 0 : Math.min(index * 0.03, 0.22)
+                    }}
+                    className={`race-result-card ${hasWinner ? 'is-completed' : 'is-upcoming'}`}
+                    style={{ '--race-color': color }}
+                  >
+                    <CardActionArea
+                      onClick={() => setSelectedRace(race)}
+                      sx={{ height: '100%', p: 2.5, textAlign: 'left', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
+                    >
+                      {/* Top Bar: Round Badge, Location, Date */}
+                      <div className="race-card-top-row">
+                        <div className="race-round-group">
+                          <span className="race-round-badge" style={{ background: hasWinner ? color : 'rgba(255,255,255,0.12)' }}>
+                            R{race.round < 10 ? `0${race.round}` : race.round}
+                          </span>
+                          <span className="race-flag-icon">{flag}</span>
+                          <span className="race-locality-text">
+                            {race.circuit?.locality || 'Circuito F1'}
+                          </span>
+                        </div>
+
+                        <span className="race-date-text">{race.date}</span>
+                      </div>
+
+                      {/* Grand Prix Title */}
+                      <Typography variant="h4" className="race-grand-prix-title">
+                        {race.grandPrix}
+                      </Typography>
+
+                      {/* Circuit Name */}
+                      <div className="race-circuit-sub">
+                        <LocationOnIcon sx={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }} />
+                        <span>{race.circuit?.name || 'Trazado Oficial 2026'}</span>
+                      </div>
+
+                      {/* Middle: Winner or Upcoming Status */}
+                      {hasWinner ? (
+                        <div className="race-winner-showcase">
+                          <div className="winner-driver-row">
+                            <Avatar
+                              src={portraitForDriver(race.winnerNumber, race.teamSlug, race.winnerDriverId)}
+                              alt={race.winner}
+                              sx={{
+                                bgcolor: color,
+                                height: 50,
+                                width: 50,
+                                border: `2px solid ${color}`,
+                                boxShadow: `0 0 14px ${color}66`,
+                                '& img': { objectFit: 'cover', objectPosition: '50% 12%' }
+                              }}
+                            >
+                              {initials(race.winner)}
+                            </Avatar>
+                            <div className="winner-details-col">
+                              <span className="winner-kicker-label">🏆 GANADOR DEL GP</span>
+                              <Typography className="winner-driver-name">{race.winner}</Typography>
+                              <span className="winner-team-pill" style={{ color }}>{race.team}</span>
+                            </div>
+                          </div>
+
+                          {/* Mini Podium Grid */}
+                          {race.podium?.length > 1 && (
+                            <div className="race-podium-mini-strip">
+                              {race.podium.map((pod, pIdx) => {
+                                const medals = ['🥇', '🥈', '🥉'];
+                                return (
+                                  <div key={pod.name} className="podium-mini-item">
+                                    <span className="podium-mini-medal">{medals[pIdx]}</span>
+                                    <span className="podium-mini-name">{pod.name.split(' ').at(-1)}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Fastest Lap Indicator */}
+                          {race.fastestLap && (
+                            <div className="race-fastest-lap-badge">
+                              <FlashOnIcon sx={{ fontSize: 13, color: '#ffd700' }} />
+                              <span>V. Rápida: <strong>{race.fastestLap.driver.split(' ').at(-1)}</strong> ({race.fastestLap.time})</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="race-upcoming-box">
+                          <CalendarMonthIcon sx={{ fontSize: 24, color: 'rgba(255,255,255,0.5)' }} />
+                          <div className="upcoming-text-col">
+                            <span className="upcoming-title">Próxima cita oficial</span>
+                            <span className="upcoming-sub">Resultados en vivo al finalizar</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Card Bottom CTA */}
+                      <div className="race-card-footer-cta">
+                        <span className="card-cta-label">
+                          {hasWinner ? 'Ver clasificación completa 📊' : 'Detalles del Gran Premio ›'}
+                        </span>
+                      </div>
+                    </CardActionArea>
+                  </Card>
+                );
+              })}
+            </Box>
+
+            {filteredRaces.length > 9 && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Button
+                  onClick={() => setShowAllRaces((value) => !value)}
+                  variant="outlined"
+                  className="results-load-more-btn"
+                >
+                  {showAllRaces ? 'Ver menos citas' : `Ver todas las citas (${filteredRaces.length})`}
+                </Button>
+              </Box>
+            )}
+          </>
+        )}
+
+        <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 3 }}>
+          Fuente de datos: <Box component="a" href={sourceLinks.results} target="_blank" rel="noreferrer" sx={{ color: 'primary.main' }}>api.jolpi.ca/ergast/f1/2026</Box> · Actualización automática en segundo plano.
+        </Typography>
+      </Container>
+
+      {/* Full Classification Dialog Modal */}
+      <AnimatePresence>
+        {selectedRace && (
+          <MotionBox
+            aria-modal="true"
+            onClick={() => setSelectedRace(null)}
+            role="dialog"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.2 }}
+            sx={{
+              alignItems: 'center',
+              backdropFilter: 'blur(16px)',
+              background: 'rgba(0,0,0,.78)',
+              display: 'flex',
+              inset: 0,
+              justifyContent: 'center',
+              p: { xs: 1.5, sm: 3 },
+              position: 'fixed',
+              zIndex: 1400
+            }}
+          >
+            <MotionBox
+              onClick={(event) => event.stopPropagation()}
+              initial={{ opacity: 0, y: 50, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.96 }}
+              transition={{ duration: reducedMotion ? 0 : 0.28, ease: 'easeOut' }}
+              className="race-modal-container"
+              style={{ '--race-color': colorFor(selectedRace) }}
+            >
+              <IconButton
+                aria-label="Cerrar resultados"
+                onClick={() => setSelectedRace(null)}
+                className="race-modal-close-btn"
+              >
+                <CloseIcon />
+              </IconButton>
+
+              {/* Modal Header */}
+              <div className="race-modal-header">
+                <div className="modal-top-badges">
+                  <span className="modal-round-pill">RONDA {selectedRace.round}</span>
+                  <span className="modal-flag-pill">{gpFlags[selectedRace.grandPrix] || '🏁'} {selectedRace.circuit?.country || 'F1'}</span>
+                  <span className="modal-date-pill">{selectedRace.date}</span>
+                </div>
+
+                <Typography variant="h3" className="modal-gp-name">
+                  {selectedRace.grandPrix}
+                </Typography>
+
+                <Typography className="modal-circuit-desc">
+                  📍 {selectedRace.circuit?.name} · {selectedRace.circuit?.locality}, {selectedRace.circuit?.country}
+                </Typography>
+              </div>
+
+              {/* Winner Header if finished */}
+              {selectedRace.hasResults ? (
+                <>
+                  <div className="modal-winner-banner">
+                    <Avatar
+                      src={portraitForDriver(selectedRace.winnerNumber, selectedRace.teamSlug, selectedRace.winnerDriverId)}
+                      sx={{
+                        bgcolor: colorFor(selectedRace),
+                        height: 60,
+                        width: 60,
+                        border: `2px solid ${colorFor(selectedRace)}`,
+                        boxShadow: `0 0 16px ${colorFor(selectedRace)}`
+                      }}
+                    >
+                      {initials(selectedRace.winner)}
+                    </Avatar>
+                    <div className="modal-winner-info">
+                      <span className="modal-winner-tag">🏆 GANADOR DE LA CARRERA</span>
+                      <Typography className="modal-winner-name">{selectedRace.winner}</Typography>
+                      <span className="modal-winner-team" style={{ color: colorFor(selectedRace) }}>{selectedRace.team}</span>
+                    </div>
+                    <div className="modal-winner-time-box">
+                      <span className="time-box-label">TIEMPO / VUELTAS</span>
+                      <strong className="time-box-val">{selectedRace.raceTime || '58 laps'} ({selectedRace.laps} v.)</strong>
+                    </div>
+                  </div>
+
+                  {/* Top 10 Classification Table */}
+                  {selectedRace.top10?.length > 0 && (
+                    <div className="modal-table-wrapper">
+                      <Typography className="modal-table-title">TOP 10 · CLASIFICACIÓN OFICIAL</Typography>
+                      <div className="modal-results-table">
+                        <div className="table-header-row">
+                          <span className="th-pos">POS</span>
+                          <span className="th-driver">PILOTO</span>
+                          <span className="th-team">EQUIPO</span>
+                          <span className="th-time">TIEMPO / ESTADO</span>
+                          <span className="th-pts">PTS</span>
+                        </div>
+                        {selectedRace.top10.map((res) => {
+                          const isPodium = res.pos <= 3;
+                          const medalIcons = ['🥇', '🥈', '🥉'];
+                          const teamVis = getTeamVisual(res.teamSlug);
+                          return (
+                            <div key={res.name} className={`table-data-row ${isPodium ? `is-podium pos-${res.pos}` : ''}`}>
+                              <span className="td-pos">
+                                {isPodium ? medalIcons[res.pos - 1] : `P${res.pos}`}
+                              </span>
+                              <div className="td-driver">
+                                <span className="driver-color-dot" style={{ background: teamVis?.color || '#fff' }} />
+                                <strong>{res.name}</strong>
+                                <span className="driver-num-code">#{res.number} {res.code}</span>
+                              </div>
+                              <span className="td-team" style={{ color: teamVis?.color || '#a0aec0' }}>{res.team}</span>
+                              <span className="td-time">{res.time}</span>
+                              <span className="td-pts">+{res.points}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="modal-upcoming-detail">
+                  <CalendarMonthIcon sx={{ fontSize: 44, color: '#ffd700' }} />
+                  <Typography variant="h5" sx={{ color: '#fff', mt: 1, fontWeight: 800 }}>Gran Premio por disputarse</Typography>
+                  <Typography sx={{ color: '#a0aec0', fontSize: '0.85rem', mt: 0.5, maxWidth: 400, textAlign: 'center' }}>
+                    Esta cita del calendario oficial 2026 se actualizará automáticamente con los resultados oficiales y tiempos por vuelta en cuanto finalice la sesión.
+                  </Typography>
+                </div>
+              )}
+            </MotionBox>
+          </MotionBox>
+        )}
+      </AnimatePresence>
+    </Box>
+  );
 }
 
 export default Resultados;

@@ -1,15 +1,23 @@
 import { cachedRequest } from '../utils/apiCache.js';
 
 const BASE_URL = 'https://api.jolpi.ca/ergast/f1';
-const TTL = { drivers: 10 * 60_000, standings: 5 * 60_000, races: 30 * 60_000, results: 30 * 60_000 };
+// Bump this whenever the shape/logic of a cached response changes, so any
+// stale entry left in sessionStorage from a previous version is ignored
+// instead of being served forever until its TTL expires naturally.
+const CACHE_VERSION = 'v2';
+const TTL = { drivers: 10 * 60_000, standings: 5 * 60_000, races: 30 * 60_000, results: 5 * 60_000 };
 const SEASON_RACES_TTL = 60 * 60_000;
 
 function unwrap(payload, table) {
   return payload?.MRData?.[table] || payload?.[table] || payload;
 }
 
+function cacheKey(key) {
+  return `${CACHE_VERSION}:${key}`;
+}
+
 async function request(path, ttl, force) {
-  return cachedRequest(`jolpica:${path}`, ttl, async () => {
+  return cachedRequest(cacheKey(`jolpica:${path}`), ttl, async () => {
     const [resource, search] = path.split('?');
     const response = await fetch(`${BASE_URL}/${resource}.json${search ? `?${search}` : ''}`, { signal: AbortSignal.timeout(12_000) });
     if (!response.ok) throw new Error(`Jolpica respondió ${response.status}`);
@@ -33,13 +41,54 @@ export async function getRaces(season, options) {
 }
 
 export async function getResults(season, round, options) {
-  const route = round ? `${season}/${round}/results` : `${season}/results?limit=2000`;
-  const data = await request(route, TTL.results, options?.force);
-  return unwrap(data, 'RaceTable').Races || [];
+  if (round) {
+    const data = await request(`${season}/${round}/results`, TTL.results, options?.force);
+    return unwrap(data, 'RaceTable').Races || [];
+  }
+
+  return cachedRequest(cacheKey(`jolpica:${season}:all-results`), TTL.results, async () => {
+    let offset = 0;
+    const limit = 100;
+    const allRaceBlocks = [];
+
+    while (true) {
+      const route = `${season}/results?limit=${limit}&offset=${offset}`;
+      const data = await request(route, TTL.results, options?.force);
+      const mr = data?.MRData;
+      const races = mr?.RaceTable?.Races || [];
+      allRaceBlocks.push(...races);
+
+      const total = Number(mr?.total || 0);
+      offset += limit;
+      if (offset >= total || races.length === 0) break;
+    }
+
+    const raceMap = new Map();
+    for (const race of allRaceBlocks) {
+      const key = String(race.round);
+      if (!raceMap.has(key)) {
+        raceMap.set(key, {
+          ...race,
+          Results: [...(race.Results || [])]
+        });
+      } else {
+        const existing = raceMap.get(key);
+        const existingDriverIds = new Set(existing.Results.map((r) => r.Driver.driverId));
+        for (const res of race.Results || []) {
+          if (!existingDriverIds.has(res.Driver.driverId)) {
+            existing.Results.push(res);
+            existingDriverIds.add(res.Driver.driverId);
+          }
+        }
+      }
+    }
+
+    return Array.from(raceMap.values());
+  }, { force: options?.force });
 }
 
 export async function getSeasonRaces(season, options) {
-  return cachedRequest(`jolpica:${season}:season-races`, TTL.results, async () => {
+  return cachedRequest(cacheKey(`jolpica:${season}:season-races`), TTL.results, async () => {
     const [schedule, results] = await Promise.all([
       getRaces(season, options),
       getResults(season, undefined, options)

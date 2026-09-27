@@ -1,12 +1,13 @@
 import { Box, Grid } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 export const legendaryCircuits = [
   {
     id: 'monaco',
     number: '01',
     name: 'Circuito de Mónaco',
+    shortName: 'Mónaco',
     trackName: 'Circuit de Monaco',
     city: 'Montecarlo',
     country: 'Mónaco',
@@ -20,6 +21,15 @@ export const legendaryCircuits = [
     lapRecord: '1:12.909',
     recordHolder: 'L. Hamilton (2021)',
     firstGrandPrix: '1950',
+    weather: 'Soleado · 25°C',
+    trackTemp: '38°C Asfalto',
+    elevation: '42m Desnivel',
+    maxG: '5.0G Fuerza Lateral',
+    sectors: [
+      { name: 'S1', time: '19.8s', speed: '275 km/h' },
+      { name: 'S2', time: '34.2s', speed: '210 km/h' },
+      { name: 'S3', time: '18.9s', speed: '290 km/h' }
+    ],
     curvasIconicas: [
       { name: 'Sainte-Dévote (T1)', desc: 'Frenada brutal a final de recta', x: 395, y: 235 },
       { name: 'Horquilla Fairmont (Loews)', desc: 'La curva más lenta y famosa de la F1', x: 305, y: 120 },
@@ -33,6 +43,7 @@ export const legendaryCircuits = [
     id: 'monza',
     number: '02',
     name: 'Autodromo Nazionale Monza',
+    shortName: 'Monza',
     trackName: 'Tempio della Velocità',
     city: 'Monza',
     country: 'Italia',
@@ -46,6 +57,15 @@ export const legendaryCircuits = [
     lapRecord: '1:21.046',
     recordHolder: 'R. Barrichello (2004)',
     firstGrandPrix: '1950',
+    weather: 'Despejado · 28°C',
+    trackTemp: '42°C Asfalto',
+    elevation: '12m Desnivel',
+    maxG: '5.4G Fuerza Lateral',
+    sectors: [
+      { name: 'S1', time: '26.4s', speed: '348 km/h' },
+      { name: 'S2', time: '27.1s', speed: '335 km/h' },
+      { name: 'S3', time: '27.5s', speed: '358 km/h' }
+    ],
     curvasIconicas: [
       { name: 'Prima Variante (T1-T2)', desc: 'De 350 km/h a 70 km/h en 100 metros', x: 390, y: 265 },
       { name: 'Curva Grande (Biassono)', desc: 'Curvón a fondo de máxima fuerza G', x: 460, y: 200 },
@@ -60,6 +80,7 @@ export const legendaryCircuits = [
     id: 'silverstone',
     number: '03',
     name: 'Circuito de Silverstone',
+    shortName: 'Silverstone',
     trackName: 'The Home of British Motor Racing',
     city: 'Northamptonshire',
     country: 'Reino Unido',
@@ -72,7 +93,16 @@ export const legendaryCircuits = [
     topSpeed: '335 km/h',
     lapRecord: '1:27.097',
     recordHolder: 'M. Verstappen (2020)',
-    firstGrandPrix: '1950 (1º en la historia)',
+    firstGrandPrix: '1950 (1º GP F1)',
+    weather: 'Nublado · 21°C',
+    trackTemp: '29°C Asfalto',
+    elevation: '11m Desnivel',
+    maxG: '5.6G Maggotts/Becketts',
+    sectors: [
+      { name: 'S1', time: '28.1s', speed: '315 km/h' },
+      { name: 'S2', time: '35.4s', speed: '335 km/h' },
+      { name: 'S3', time: '23.5s', speed: '298 km/h' }
+    ],
     curvasIconicas: [
       { name: 'Hamilton Straight & Abbey', desc: 'Curva 1 ciega a fondo en 7ª marcha', x: 295, y: 265 },
       { name: 'Copse Corner', desc: 'Giro mítico a derechas a casi 290 km/h', x: 415, y: 130 },
@@ -93,17 +123,18 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
 
   return (
     <div className="circuit-showcase-container" style={{ '--circuit-accent': circuit.accentColor }}>
-      {/* Circuit Selector Header */}
+      {/* Top Header Banner with Live Badge and Circuit Tag */}
       <div className="circuit-nav-header">
         <div className="circuit-top-banner">
           <div className="circuit-badge-inline">
             <span className="circuit-live-indicator" />
-            <span className="circuit-badge-text">🏁 TOP 3 CIRCUITOS</span>
+            <span className="circuit-badge-text">🏁 TOP 3 CIRCUITOS ICÓNICOS</span>
           </div>
           <span className="circuit-tag-badge">{circuit.tag}</span>
         </div>
 
-        <div className="circuit-tabs" role="tablist" aria-label="Seleccionar circuito legendario">
+        {/* Full-width Balanced 3-Column Tabs spanning horizontally */}
+        <div className="circuit-tabs-grid" role="tablist" aria-label="Seleccionar circuito legendario">
           {legendaryCircuits.map((item, index) => {
             const isSelected = currentIndex === index;
             return (
@@ -112,23 +143,49 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
                 type="button"
                 role="tab"
                 aria-selected={isSelected}
-                className={`circuit-tab-pill ${isSelected ? 'is-active' : ''}`}
-                style={{ '--tab-glow': item.accentColor }}
+                className={`circuit-tab-card ${isSelected ? 'is-active' : ''}`}
+                style={{ '--tab-accent': item.accentColor }}
                 onClick={() => setIndex(index)}
               >
-                <span className="circuit-flag">{item.flag}</span>
-                <span className="circuit-num-badge">0{index + 1}</span>
-                <span className="circuit-short-name">{item.name.replace('Circuito de ', '').replace('Autodromo Nazionale ', '')}</span>
+                <div className="circuit-tab-header">
+                  <span className="circuit-flag">{item.flag}</span>
+                  <span className="circuit-num-badge">P0{index + 1}</span>
+                </div>
+                <div className="circuit-tab-title">{item.shortName}</div>
+                <div className="circuit-tab-sub">{item.length} · {item.turns}T</div>
+                {isSelected && <motion.div layoutId="circuitActiveGlow" className="circuit-tab-active-bar" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* SVG Interactive Circuit Stage with Motion */}
+      {/* SVG Interactive Circuit Stage with Motion & Wide Telemetry HUD */}
       <div className="circuit-track-stage">
         <div className="circuit-ambient-glow" />
         <div className="circuit-grid-pattern" aria-hidden="true" />
+
+        {/* Live Weather / Conditions HUD on Top Left */}
+        <div className="circuit-weather-hud">
+          <span className="weather-tag">⛅ {circuit.weather}</span>
+          <span className="weather-temp">🔥 {circuit.trackTemp}</span>
+        </div>
+
+        {/* Live Sectors Breakdown on Top Right */}
+        <div className="circuit-sectors-hud">
+          {circuit.sectors.map((sec) => (
+            <div key={sec.name} className="sector-pill">
+              <span className="sector-name">{sec.name}</span>
+              <span className="sector-time">{sec.time}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Extra Live G-Force & Aero Badge on Bottom Left of Stage */}
+        <div className="circuit-extra-hud-bottom">
+          <span className="extra-hud-pill">🏎️ {circuit.maxG}</span>
+          <span className="extra-hud-pill">📐 {circuit.elevation}</span>
+        </div>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -140,7 +197,7 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
             transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
           >
             <svg
-              viewBox="0 0 500 300"
+              viewBox="0 0 500 290"
               className="circuit-svg-map"
               preserveAspectRatio="xMidYMid meet"
               aria-label={`Mapa del ${circuit.name}`}
@@ -174,10 +231,10 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
               />
 
               {/* High-Tech Animated Racing Photon / Lap Car */}
-              <circle r="5" fill="#ffffff" filter={`url(#circuit-glow-${circuit.id})`}>
+              <circle r="5.5" fill="#ffffff" filter={`url(#circuit-glow-${circuit.id})`}>
                 <animateMotion dur="4.2s" repeatCount="indefinite" path={circuit.svgPath} />
               </circle>
-              <circle r="11" fill={circuit.accentColor} opacity="0.5" filter={`url(#circuit-glow-${circuit.id})`}>
+              <circle r="12" fill={circuit.accentColor} opacity="0.45" filter={`url(#circuit-glow-${circuit.id})`}>
                 <animateMotion dur="4.2s" repeatCount="indefinite" path={circuit.svgPath} />
               </circle>
 
@@ -193,11 +250,11 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
                   onMouseEnter={() => setActiveTurn(turn)}
                   onMouseLeave={() => setActiveTurn(null)}
                 >
-                  <circle r="12" fill="transparent" style={{ cursor: 'pointer' }} />
-                  <circle r="4.5" fill="#ffffff" stroke={circuit.accentColor} strokeWidth="2" />
-                  <circle r="8" fill="none" stroke={circuit.accentColor} strokeWidth="1" opacity="0.6">
-                    <animate attributeName="r" values="4;12;4" dur="2s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+                  <circle r="14" fill="transparent" style={{ cursor: 'pointer' }} />
+                  <circle r="5" fill="#ffffff" stroke={circuit.accentColor} strokeWidth="2.5" />
+                  <circle r="9" fill="none" stroke={circuit.accentColor} strokeWidth="1.5" opacity="0.7">
+                    <animate attributeName="r" values="4;14;4" dur="2s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.9;0;0.9" dur="2s" repeatCount="indefinite" />
                   </circle>
                 </g>
               ))}
@@ -223,7 +280,7 @@ export function CircuitShowcase({ selectedIndex = 0, onSelectIndex }) {
         <span className="circuit-turns-badge">{circuit.turns} CURVAS · {circuit.drsZones} DRS</span>
       </div>
 
-      {/* Circuit Telemetry Grid */}
+      {/* Circuit Telemetry Grid - Wide 4 Column Grid */}
       <Grid container spacing={1.25} className="circuit-telemetry-grid">
         <Grid item xs={6} sm={3}>
           <div className="telemetry-cell">

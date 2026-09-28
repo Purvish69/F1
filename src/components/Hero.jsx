@@ -1,7 +1,5 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import SpeedIcon from '@mui/icons-material/Speed';
-import { Box, Button, Chip, Container, Grid, Skeleton, Stack, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, Typography, useMediaQuery } from '@mui/material';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { sourceLinks } from '../data/f1Data.js';
@@ -88,8 +86,6 @@ function Hero() {
       <Grid container spacing={{ xs: 4, md: 5, lg: 6 }} alignItems="stretch">
         <Grid item xs={12} md={6} className="hero-glass-col">
           <MotionBox initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: reducedMotion ? 0 : .08 }}>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap className="hero-chips"><Chip icon={<SpeedIcon />} color="primary" label="TEMPORADA 2026" />{leader ? <Chip icon={<EmojiEventsIcon />} label={`${leader.name} · ${leader.points} PTS`} variant="outlined" /> : <Skeleton width={210} />}</Stack>
-            
             <GlassTitleCard className={`hero-title-glass-box ${boostActive ? 'hero-boost-active' : ''}`} isBoosted={boostActive}>
               <AeroSpeedStreaks boosted={boostActive} />
               <TitaniumSparks active={!reducedMotion} />

@@ -71,46 +71,170 @@ function EquipoCard({ team, driverMap, leaderPoints }) {
       background: `linear-gradient(135deg, ${team.color}30, rgba(255,255,255,.075) 42%, rgba(8,8,11,.78)), radial-gradient(circle at 80% 8%, ${team.color}42, transparent 14rem)`,
       backdropFilter: 'blur(18px) saturate(150%)',
       borderColor: `${team.color}62`,
+      borderRadius: { xs: 5, md: 6 },
       boxShadow: 'inset 0 1px rgba(255,255,255,.28), inset 0 -1px rgba(255,255,255,.06), 0 20px 60px rgba(0,0,0,.26)',
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       minHeight: 385,
-      overflow: 'visible',
+      overflow: 'hidden',
       position: 'relative',
       transformStyle: 'preserve-3d',
+      width: '100%',
       '&::before': { background: `radial-gradient(circle 150px at var(--spotlight-x) var(--spotlight-y), ${team.color}66, transparent 72%)`, content: '""', inset: 0, opacity: tiltDisabled ? 0 : 1, pointerEvents: 'none', position: 'absolute', transition: 'opacity .2s ease' },
       '&::after': { background: `linear-gradient(90deg, transparent, rgba(255,255,255,.72), ${team.color}aa, rgba(255,255,255,.72), transparent)`, content: '""', height: '1px', left: '6%', position: 'absolute', right: '6%', top: 0 }
     }}
   >
     <Box sx={{ backgroundImage: 'radial-gradient(rgba(255,255,255,.20) 1px, transparent 1px)', backgroundSize: '6px 6px', bottom: 0, height: '48%', left: 0, opacity: .2, position: 'absolute', right: 0 }} />
-    <Box sx={{ p: { xs: 2.2, md: 3 }, position: 'relative', transform: 'translateZ(1px)', zIndex: 1 }}>
-      <Box sx={{ alignItems: 'start', display: 'grid', gap: 1.5, gridTemplateColumns: 'minmax(0, 1fr) auto' }}>
-        <Box sx={{ minWidth: 0 }}>
-          <Typography variant="h3" sx={{ color: 'common.white', letterSpacing: '.015em', lineHeight: .9, textShadow: '0 3px 16px rgba(0,0,0,.34)' }}>{team.name}</Typography>
+    <Box sx={{ p: { xs: 2, sm: 2.5, md: 3 }, position: 'relative', transform: 'translateZ(1px)', zIndex: 1 }}>
+      {/* Non-overflowing responsive header */}
+      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', gap: 1, minWidth: 0, width: '100%' }}>
+        <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+          <Typography
+            variant="h3"
+            sx={{
+              color: 'common.white',
+              fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.05rem' },
+              fontWeight: 1000,
+              letterSpacing: '.01em',
+              lineHeight: 1.05,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              textShadow: '0 3px 18px rgba(0,0,0,.45)',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {team.name}
+          </Typography>
         </Box>
-        <Box sx={{ alignItems: 'flex-end', display: 'flex', flexDirection: 'column', minWidth: 74, textAlign: 'right' }}>
-          <Box sx={{ bgcolor: team.color, borderRadius: 99, color: 'common.white', fontSize: '.68rem', fontWeight: 1000, letterSpacing: '.08em', lineHeight: 1, mb: .5, px: .75, py: .45 }}>P{team.position}</Box>
-          <Typography sx={{ color: 'common.white', fontFamily: 'var(--font-display)', fontSize: '2.6rem', lineHeight: .72 }}>{team.points}</Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,.70)', fontSize: '.67rem', fontWeight: 900, letterSpacing: '.1em', mt: .45 }}>PTS</Typography>
+        <Box sx={{ alignItems: 'center', display: 'flex', flexShrink: 0, gap: 1 }}>
+          <Box
+            sx={{
+              bgcolor: team.color,
+              borderRadius: 99,
+              color: 'common.white',
+              fontSize: '.72rem',
+              fontWeight: 1000,
+              letterSpacing: '.08em',
+              lineHeight: 1,
+              px: 0.9,
+              py: 0.5,
+              boxShadow: `0 0 14px ${team.color}88`
+            }}
+          >
+            P{team.position}
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.3 }}>
+            <Typography sx={{ color: 'common.white', fontFamily: 'var(--font-display)', fontSize: { xs: '1.9rem', sm: '2.4rem' }, lineHeight: 1 }}>
+              {team.points}
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,.70)', fontSize: '.62rem', fontWeight: 900, letterSpacing: '.08em' }}>
+              PTS
+            </Typography>
+          </Box>
         </Box>
       </Box>
 
-      <Box sx={{ mt: { xs: 1.5, md: 1.25 }, overflow: 'visible', position: 'relative', zIndex: 1 }}>
-        <Box sx={{ inset: 0, overflow: 'hidden', pointerEvents: 'none', position: 'absolute', zIndex: 2 }}><motion.div key={sweep} initial={{ opacity: 0, x: '-130%' }} animate={sweep ? { opacity: [0, .7, 0], x: '145%' } : { opacity: 0 }} transition={{ duration: .48, ease: 'easeOut' }} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent)', height: '100%', pointerEvents: 'none', position: 'absolute', top: 0, transform: 'skewX(-22deg)', width: '35%' }} /></Box>
-        <motion.img src={team.car} alt={`${team.name} 2026 car`} loading="lazy" style={{ display: 'block', filter: 'drop-shadow(0 25px 30px rgba(0,0,0,.48))', height: 'auto', position: 'relative', translateX: tiltDisabled ? 0 : carX, translateY: tiltDisabled ? 0 : carY, width: '100%', zIndex: 1 }} />
+      {/* Car Visual Stage - Perfectly Centered */}
+      <Box sx={{ my: { xs: 1.5, md: 1.75 }, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', position: 'relative', width: '100%', zIndex: 1 }}>
+        <Box sx={{ inset: 0, overflow: 'hidden', pointerEvents: 'none', position: 'absolute', zIndex: 2 }}>
+          <motion.div key={sweep} initial={{ opacity: 0, x: '-130%' }} animate={sweep ? { opacity: [0, .7, 0], x: '145%' } : { opacity: 0 }} transition={{ duration: .48, ease: 'easeOut' }} style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent)', height: '100%', pointerEvents: 'none', position: 'absolute', top: 0, transform: 'skewX(-22deg)', width: '35%' }} />
+        </Box>
+        <motion.img
+          src={team.car}
+          alt={`${team.name} 2026 car`}
+          loading="lazy"
+          style={{
+            display: 'block',
+            margin: '0 auto',
+            filter: 'drop-shadow(0 20px 28px rgba(0,0,0,.65))',
+            height: 'auto',
+            maxHeight: '190px',
+            maxWidth: '100%',
+            objectFit: 'contain',
+            position: 'relative',
+            translateX: tiltDisabled ? 0 : carX,
+            translateY: tiltDisabled ? 0 : carY,
+            width: 'auto',
+            zIndex: 1
+          }}
+        />
       </Box>
 
-      {Number.isFinite(leaderPoints) && <Typography sx={{ color: 'rgba(255,255,255,.82)', fontSize: '.72rem', fontWeight: 800, letterSpacing: '.04em', mt: -.4, textAlign: 'right' }}>{team.points} / {leaderPoints} pts del líder</Typography>}
-      <Box sx={{ bgcolor: 'rgba(0,0,0,.25)', borderRadius: 99, height: 4, mt: .6, overflow: 'hidden' }}><motion.div initial={{ width: 0 }} whileInView={{ width: `${pointRatio}%` }} viewport={{ once: true }} transition={{ duration: .65 }} style={{ background: team.color, boxShadow: `0 0 12px ${team.color}`, height: '100%' }} /></Box>
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1.75 }}>
-        {teamDrivers.map((driver) => <Chip key={driver.id} avatar={<DriverAvatar driver={driver} teamColor={team.color} />} label={<><Box component="span" sx={{ fontSize: '.82rem', fontWeight: 900 }}>{driver.name.split(' ').at(-1).toUpperCase()}</Box><Box component="span" sx={{ color: 'rgba(255,255,255,.72)', fontSize: '.74rem', fontWeight: 600 }}> · {driver.points} pts</Box></>} sx={{ bgcolor: 'rgba(0,0,0,.30)', color: 'common.white', maxWidth: '100%', '& .MuiChip-label': { alignItems: 'center', display: 'flex', minWidth: 0 } }} />)}
+      {/* Leader Points Comparison & Ratio Bar */}
+      {Number.isFinite(leaderPoints) && (
+        <Typography sx={{ color: 'rgba(255,255,255,.82)', fontSize: '.7rem', fontWeight: 800, letterSpacing: '.04em', mt: -.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
+          {team.points} / {leaderPoints} pts del líder
+        </Typography>
+      )}
+      <Box sx={{ bgcolor: 'rgba(0,0,0,.3)', borderRadius: 99, height: 5, mt: .6, overflow: 'hidden', width: '100%' }}>
+        <motion.div initial={{ width: 0 }} whileInView={{ width: `${pointRatio}%` }} viewport={{ once: true }} transition={{ duration: .65 }} style={{ background: team.color, boxShadow: `0 0 12px ${team.color}`, height: '100%' }} />
+      </Box>
+
+      {/* Ultra-polished Driver Pills */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mt: 1.75, width: '100%' }}>
+        {teamDrivers.map((driver) => (
+          <Box
+            key={driver.id}
+            sx={{
+              alignItems: 'center',
+              bgcolor: 'rgba(0,0,0,.38)',
+              border: '1px solid rgba(255,255,255,.14)',
+              borderRadius: 3,
+              display: 'flex',
+              flex: 1,
+              gap: 1.2,
+              minWidth: 0,
+              p: '6px 12px',
+              width: '100%'
+            }}
+          >
+            <DriverAvatar driver={driver} teamColor={team.color} />
+            <Box sx={{ minWidth: 0, flex: 1, overflow: 'hidden' }}>
+              <Typography sx={{ color: 'common.white', fontSize: '.82rem', fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {driver.name.split(' ').at(-1).toUpperCase()}
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,.70)', fontSize: '.7rem', fontWeight: 700 }}>
+                {driver.points} pts
+              </Typography>
+            </Box>
+          </Box>
+        ))}
       </Stack>
-      <Box sx={{ alignItems: { xs: 'stretch', sm: 'center' }, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.4, justifyContent: 'space-between', mt: 1.6 }}>
-        <Box sx={{ display: 'grid', flex: 1, gap: 1.2, gridTemplateColumns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(4, minmax(0, 1fr))' }, width: 'auto' }}>
+
+      {/* Bottom InfoPills Grid & Button */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.4, justifyContent: 'space-between', mt: 1.8, width: '100%' }}>
+        <Box sx={{ display: 'grid', flex: 1, gap: 1, gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' }, width: '100%' }}>
           <InfoPill label="Victorias" value={team.wins} />
           {difference !== null && <InfoPill label="Dif. líder" value={difference === 0 ? 'Líder' : `${difference} pts`} />}
           {validDetail(team.engine) && <InfoPill label="Motor" value={team.engine} />}
           {validDetail(team.chassis) && <InfoPill label="Chasis" value={team.chassis} />}
         </Box>
-        <Button href={`https://www.formula1.com/en/teams/${officialSlug}`} target="_blank" rel="noreferrer" endIcon={<OpenInNewIcon />} sx={{ alignSelf: { xs: 'flex-end', sm: 'center' }, bgcolor: 'rgba(0,0,0,.28)', color: 'common.white', whiteSpace: 'nowrap', '&:hover': { bgcolor: 'rgba(0,0,0,.42)' } }}>Equipo oficial</Button>
+        <Button
+          fullWidth={false}
+          href={`https://www.formula1.com/en/teams/${officialSlug}`}
+          target="_blank"
+          rel="noreferrer"
+          endIcon={<OpenInNewIcon />}
+          sx={{
+            alignSelf: { xs: 'stretch', sm: 'center' },
+            backdropFilter: 'blur(8px)',
+            bgcolor: 'rgba(0,0,0,.32)',
+            border: `1px solid ${team.color}66`,
+            borderRadius: 2,
+            color: 'common.white',
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            justifyContent: 'center',
+            minHeight: 44,
+            px: 2,
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+            width: { xs: '100%', sm: 'auto' },
+            '&:hover': { bgcolor: `${team.color}33`, borderColor: team.color }
+          }}
+        >
+          Equipo oficial
+        </Button>
       </Box>
     </Box>
   </Card>;

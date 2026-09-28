@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-Se abre en `http://localhost:5173`.
+Se abre en `http://localhost:xxx`.
 
 Para generar la versión de producción: `npm run build`.
 

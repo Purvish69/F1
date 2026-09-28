@@ -35,6 +35,19 @@ function Pilotos() {
     [teams]
   );
 
+  const driverCountsByTeam = useMemo(() => {
+    const counts = { all: drivers.filter((d) => visibleSurnames.has(normalize(d.name).split(' ').at(-1))).length };
+    drivers.forEach((driver) => {
+      if (visibleSurnames.has(normalize(driver.name).split(' ').at(-1))) {
+        counts[driver.teamSlug] = (counts[driver.teamSlug] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [drivers]);
+
+  const activeVisual = teamFilter !== 'all' ? getTeamVisual(teamFilter) : null;
+  const activeColor = activeVisual?.color || '#E8002D';
+
   return (
     <Box component="section" id="pilotos" sx={{ background: 'radial-gradient(circle at 8% 26%, rgba(232,0,45,.14), transparent 26rem), radial-gradient(circle at 90% 72%, rgba(255,255,255,.055), transparent 30rem), #070708', py: { xs: 8, md: 12 } }}>
       <Container maxWidth="xl">
@@ -47,30 +60,119 @@ function Pilotos() {
               Pilotos
             </Typography>
           </Box>
-          <Paper sx={{
-              backdropFilter: 'blur(18px)',
-              background: 'linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.045))',
-              border: '1px solid rgba(255,255,255,.18)',
-              boxShadow: 'inset 0 1px rgba(255,255,255,.22)',
-              p: 1.2
-            }}><Stack direction="row" spacing={1.2} sx={{ alignItems: 'center' }}>
-              <FilterAltIcon color="primary" />
+
+          <div
+            className={`pilot-filter-glass-capsule ${teamFilter !== 'all' ? 'has-filter' : ''}`}
+            style={{ '--active-filter-color': activeColor, '--active-filter-glow': activeColor }}
+          >
+            <div className="filter-badge-icon">
+              <FilterAltIcon sx={{ fontSize: 18 }} />
+            </div>
+
+            <div className="filter-select-wrapper">
+              <span className="filter-mini-label">FILTRAR ESCUDERÍA</span>
               <Select
                 value={teamFilter}
                 onChange={(event) => setTeamFilter(event.target.value)}
-                size="small"
-                sx={{
-                  minWidth: 220,
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,.16)' },
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,.32)' }
+                variant="standard"
+                disableUnderline
+                displayEmpty
+                className="pilot-team-custom-select"
+                renderValue={(selected) => {
+                  if (selected === 'all') {
+                    return (
+                      <div className="select-val-row">
+                        <span className="select-val-dot all-dot" />
+                        <span className="select-val-name">Todos los equipos</span>
+                        <span className="select-val-count">{driverCountsByTeam.all || filteredDrivers.length}</span>
+                      </div>
+                    );
+                  }
+                  const currentTeam = teams.find((t) => t.slug === selected);
+                  const color = getTeamVisual(selected)?.color || '#E8002D';
+                  return (
+                    <div className="select-val-row">
+                      <span className="select-val-dot" style={{ background: color, boxShadow: `0 0 10px ${color}` }} />
+                      <span className="select-val-name">{currentTeam ? currentTeam.name : selected}</span>
+                      <span className="select-val-count">{driverCountsByTeam[selected] || 0}</span>
+                    </div>
+                  );
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    className: 'f1-select-popover-menu',
+                    sx: {
+                      background: 'rgba(8, 8, 14, 0.96) !important',
+                      backdropFilter: 'blur(30px) saturate(200%)',
+                      border: '1px solid rgba(255, 255, 255, 0.14)',
+                      borderRadius: '16px',
+                      boxShadow: '0 24px 60px rgba(0, 0, 0, 0.88), 0 0 35px rgba(232, 0, 45, 0.18)',
+                      mt: 1,
+                      maxHeight: 380,
+                      p: 0.8
+                    }
+                  }
                 }}
               >
-                <MenuItem value="all">Todos los equipos</MenuItem>
-                {teams.map((team) => (
-                  <MenuItem key={team.slug} value={team.slug}>{team.name}</MenuItem>
-                ))}
+                <MenuItem value="all" className="f1-select-menu-item">
+                  <div className="menu-item-row">
+                    <span className="menu-item-color-indicator all-teams-gradient" />
+                    <div className="menu-item-text-group">
+                      <span className="menu-item-name">Todos los equipos</span>
+                      <span className="menu-item-sub">Parrilla completa 2026</span>
+                    </div>
+                    <span className="menu-item-badge">{driverCountsByTeam.all || drivers.length}</span>
+                    {teamFilter === 'all' && <span className="menu-item-check">✓</span>}
+                  </div>
+                </MenuItem>
+
+                {teams.map((team) => {
+                  const visual = getTeamVisual(team.slug);
+                  const isSelected = teamFilter === team.slug;
+                  const count = driverCountsByTeam[team.slug] || 0;
+                  return (
+                    <MenuItem
+                      key={team.slug}
+                      value={team.slug}
+                      className={`f1-select-menu-item ${isSelected ? 'is-selected' : ''}`}
+                      style={{ '--item-team-color': visual?.color || '#E8002D' }}
+                    >
+                      <div className="menu-item-row">
+                        <span
+                          className="menu-item-color-indicator"
+                          style={{ background: visual?.color || '#E8002D', boxShadow: `0 0 8px ${visual?.color || '#E8002D'}` }}
+                        />
+                        <div className="menu-item-text-group">
+                          <span className="menu-item-name">{team.name}</span>
+                          <span className="menu-item-sub">{team.fullName || 'Equipo F1 2026'}</span>
+                        </div>
+                        <span className="menu-item-badge">{count}</span>
+                        {isSelected && (
+                          <span className="menu-item-check" style={{ color: visual?.color || '#E8002D' }}>
+                            ✓
+                          </span>
+                        )}
+                      </div>
+                    </MenuItem>
+                  );
+                })}
               </Select>
-            </Stack></Paper>
+            </div>
+
+            {teamFilter !== 'all' && (
+              <button
+                type="button"
+                className="filter-clear-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTeamFilter('all');
+                }}
+                title="Restablecer a todos los equipos"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </Box>
 
         {loading && <LoadingState label="Cargando pilotos..." cards={4} />}

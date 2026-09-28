@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import SpeedIcon from '@mui/icons-material/Speed';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import {
   AppBar,
   Box,
@@ -12,125 +14,174 @@ import {
   Toolbar,
   Typography
 } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { navLinks } from '../data/f1Data.js';
+import { ShinyText } from './ReactBits.jsx';
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('#inicio');
+  const [hoveredNav, setHoveredNav] = useState(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 30);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24);
+
+      const sections = navLinks.map(l => l.href.substring(1));
+      const scrollPos = window.scrollY + 200;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(`#${sections[i]}`);
+          break;
+        }
+      }
+    };
+
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navButton = (link) => (
-    <Button
-      key={link.href}
-      href={link.href}
-      onClick={() => setOpen(false)}
-      color="inherit"
-      sx={{
-        border: '1px solid transparent',
-        color: 'rgba(255,255,255,.82)',
-        fontWeight: 800,
-        letterSpacing: '.08em',
-        px: 1.2,
-        transition: 'background .22s ease, color .22s ease, border-color .22s ease, transform .22s ease',
-        '&:hover': {
-          bgcolor: 'rgba(255,255,255,.06)',
-          borderColor: 'rgba(255,255,255,.12)',
-          color: 'common.white',
-          transform: 'translateY(-1px)'
-        }
-      }}
-    >
-      {link.label}
-    </Button>
-  );
 
   return (
     <AppBar
       position="fixed"
       elevation={0}
+      className={`f1-glass-navbar ${scrolled ? 'is-scrolled' : ''}`}
       sx={{
-        borderBottom: scrolled ? '1px solid rgba(232,0,45,.55)' : '1px solid rgba(255,255,255,.06)',
-        bgcolor: scrolled ? 'rgba(5,5,5,.58)' : 'rgba(5,5,5,.24)',
-        backdropFilter: 'blur(22px) saturate(130%)',
-        boxShadow: scrolled ? '0 18px 60px rgba(0,0,0,.28)' : 'none',
-        transition: 'background .28s ease, border-color .28s ease, box-shadow .28s ease'
+        bgcolor: 'transparent',
+        backgroundImage: 'none',
+        boxShadow: 'none',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1100,
+        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ minHeight: { xs: 68, md: scrolled ? 68 : 82 } }}>
-          <Typography
-            component="a"
-            href="#inicio"
-            variant="h4"
-            sx={{
-              color: 'common.white',
-              flexGrow: 1,
-              lineHeight: .9,
-              textDecoration: 'none',
-              '&::after': {
-                background: 'linear-gradient(90deg, #E8002D, rgba(255,255,255,.92))',
-                content: '""',
-                display: 'block',
-                height: 3,
-                mt: .5,
-                transform: 'skewX(-22deg)',
-                width: 72
-              }
-            }}
-          >
-            F1 2026
-          </Typography>
+      <Container maxWidth={false} sx={{ maxWidth: '1640px', px: { xs: 2, sm: 3, md: 4 } }}>
+        <div className={`nav-glass-shell ${scrolled ? 'shell-scrolled' : ''}`}>
+          <Toolbar disableGutters className="nav-toolbar">
+            {/* Logo Brand with High-Tech Glow */}
+            <a href="#inicio" className="nav-brand-link" onClick={() => setActiveSection('#inicio')}>
+              <div className="nav-logo-badge">
+                <span className="f1-logo-main">F1</span>
+                <span className="f1-logo-slash" />
+                <span className="f1-logo-year">2026</span>
+              </div>
+              <div className="nav-brand-status">
+                <span className="nav-status-pulse" />
+                <span className="nav-status-txt">SEASON HUB</span>
+              </div>
+            </a>
 
-          <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {navLinks.map(navButton)}
-          </Stack>
+            {/* Desktop Navigation Links with Glass Animated Pill */}
+            <div className="nav-links-desktop" onMouseLeave={() => setHoveredNav(null)}>
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.href;
+                const isHovered = hoveredNav === link.href;
 
-          <IconButton
-            aria-label="Abrir menu"
-            onClick={() => setOpen(true)}
-            sx={{ color: 'common.white', display: { xs: 'inline-flex', md: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className={`nav-link-btn ${isActive ? 'is-active' : ''}`}
+                    onMouseEnter={() => setHoveredNav(link.href)}
+                    onClick={() => setActiveSection(link.href)}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeNavIndicator"
+                        className="nav-active-pill"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    {isHovered && !isActive && (
+                      <motion.span
+                        layoutId="hoverNavIndicator"
+                        className="nav-hover-pill"
+                        transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      />
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* Right Action HUD Badge */}
+            <div className="nav-right-actions">
+              <a href="#top-equipos" className="nav-live-cta">
+                <span className="live-dot" />
+                <span className="live-text">MONOPLAZAS 2026</span>
+                <span className="live-pill-tag">GEN-3</span>
+              </a>
+
+              {/* Mobile Menu Trigger Button */}
+              <IconButton
+                aria-label="Abrir menú"
+                onClick={() => setOpen(true)}
+                className="nav-mobile-trigger"
+                sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+              >
+                <MenuIcon sx={{ color: '#fff' }} />
+              </IconButton>
+            </div>
+          </Toolbar>
+        </div>
       </Container>
 
+      {/* Mobile Glass Drawer */}
       <Drawer
         anchor="right"
         open={open}
         onClose={() => setOpen(false)}
         PaperProps={{
-          sx: {
-            bgcolor: '#070707',
-            backgroundImage: 'linear-gradient(145deg, rgba(232,0,45,.18), transparent)',
-            p: 3,
-            width: 'min(86vw, 360px)'
-          }
+          className: 'nav-mobile-drawer-paper'
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton aria-label="Cerrar menu" onClick={() => setOpen(false)} sx={{ color: 'common.white' }}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-        <Stack spacing={1.2} sx={{ mt: 5 }}>
-          {navLinks.map((link) => (
-            <Button
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              sx={{ color: 'common.white', fontSize: 28, justifyContent: 'flex-start' }}
-            >
-              {link.label}
-            </Button>
-          ))}
-        </Stack>
+        <div className="mobile-drawer-content">
+          <div className="mobile-drawer-header">
+            <div className="nav-logo-badge">
+              <span className="f1-logo-main">F1</span>
+              <span className="f1-logo-slash" />
+              <span className="f1-logo-year">2026</span>
+            </div>
+            <IconButton aria-label="Cerrar menú" onClick={() => setOpen(false)} sx={{ color: '#fff' }}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+
+          <div className="mobile-drawer-nav">
+            {navLinks.map((link, idx) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                onClick={() => {
+                  setOpen(false);
+                  setActiveSection(link.href);
+                }}
+                className={`mobile-nav-item ${activeSection === link.href ? 'is-active' : ''}`}
+                initial={{ opacity: 0, x: 25 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <span className="mobile-nav-num">0{idx + 1}</span>
+                <span className="mobile-nav-label">{link.label}</span>
+                <span className="mobile-nav-arrow">→</span>
+              </motion.a>
+            ))}
+          </div>
+
+          <div className="mobile-drawer-footer">
+            <div className="mobile-drawer-spec">
+              <SpeedIcon sx={{ fontSize: 18, color: '#e8002d' }} />
+              <span>FIA Formula 1 World Championship 2026</span>
+            </div>
+          </div>
+        </div>
       </Drawer>
     </AppBar>
   );

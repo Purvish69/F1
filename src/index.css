@@ -939,7 +939,28 @@ section[id] {
   font-weight: 800;
   letter-spacing: 0.08em;
 }
-
+.circuit-tag-badge {
+  align-items: center;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 100px;
+  color: var(--color-gold);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 800;
+  gap: 6px;
+  letter-spacing: 0.08em;
+  margin-left: auto;
+  padding: 4px 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.circuit-tag-badge::before {
+  content: '👑';
+  font-size: 0.85rem;
+}
 /* Full Podium Top 3 Teams Card Below */
 .hero-podium-full-card {
   background:

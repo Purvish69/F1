@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/GSAP-3.15-88CE02?style=for-the-badge&logo=greensock&logoColor=black" alt="GSAP" />
 </p>
 
-Aplicación web sobre la Fórmula 1 con datos reales de la temporada 2026: pilotos, escuderías, calendario, resultados y clasificaciones. Tiene un diseño oscuro y futurista, con animaciones y scroll suave para que sea agradable de recorrer.
+Aplicación web sobre la Fórmula 1 con datos reales de la temporada 2026: pilotos, escuderías, calendario, resultados y clasificaciones, todo con un diseño oscuro y futurista.
 
 ---
 

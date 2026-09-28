@@ -85,7 +85,7 @@ function Hero() {
     <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
       <Grid container spacing={{ xs: 4, md: 5, lg: 6 }} alignItems="stretch">
         <Grid item xs={12} md={6} className="hero-glass-col">
-          <MotionBox initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: reducedMotion ? 0 : .08 }}>
+          <MotionBox className="hero-card-motion" initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: reducedMotion ? 0 : .08 }}>
             <GlassTitleCard className={`hero-title-glass-box ${boostActive ? 'hero-boost-active' : ''}`} isBoosted={boostActive}>
               <AeroSpeedStreaks boosted={boostActive} />
               <TitaniumSparks active={!reducedMotion} />
@@ -124,18 +124,20 @@ function Hero() {
                   <span className="boost-btn-text">{boostActive ? 'BOOST ACTIVADO' : 'PUSH TO PASS 350kW'}</span>
                 </button>
               </div>
-            </GlassTitleCard>
 
-            {/* <Typography className="hero-copy">Datos oficiales, clasificaciones y calendario 2026. Una lectura clara de la parrilla, con la pista siempre en primer plano.</Typography> */}
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} className="hero-actions"><Button href="#pilotos" size="large" variant="contained" endIcon={<ArrowForwardIcon />}>Explorar pilotos</Button><Button href={sourceLinks.results} target="_blank" rel="noreferrer" size="large" variant="outlined">Fuente oficial F1</Button></Stack>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} className="hero-actions">
+                <Button href="#pilotos" size="large" variant="contained" endIcon={<ArrowForwardIcon />}>Explorar pilotos</Button>
+                <Button href={sourceLinks.results} target="_blank" rel="noreferrer" size="large" variant="outlined">Fuente oficial F1</Button>
+              </Stack>
+            </GlassTitleCard>
           </MotionBox>
         </Grid>
         <Grid item xs={12} md={6} className="hero-circuit-col">
-          <MotionBox initial={{ opacity: 0, scale: .96, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: reducedMotion ? 0 : .82, delay: reducedMotion ? 0 : .18 }}>
-            <SpotlightCard className="hero-machine-card circuit-card-spotlight" style={{ '--current-team-color': '#E8002D' }}>
+          <MotionBox className="hero-card-motion" initial={{ opacity: 0, scale: .96, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: reducedMotion ? 0 : .82, delay: reducedMotion ? 0 : .18 }}>
+            <SpotlightCard className="hero-machine-card circuit-card-spotlight" showBrackets={true} style={{ '--current-team-color': '#E8002D' }}>
               <CircuitShowcase />
               <div className="next-race-bar">
-                <span>PRÓXIMA CARRERA</span>
+                <span className="next-race-pill"><span className="hud-pulse-dot" /> PRÓXIMA CARRERA</span>
                 <strong>{nextRace?.raceName || (loading ? 'Cargando calendario…' : 'No hay citas pendientes')}</strong>
                 <b>{nextRace ? formatRaceDate(nextRace.date) : '—'}</b>
               </div>

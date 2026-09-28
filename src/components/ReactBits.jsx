@@ -23,7 +23,7 @@ export function CountUp({ value, duration = 850, className = '' }) {
   return <span className={className}>{display}</span>;
 }
 
-export function SpotlightCard({ children, className = '' }) {
+export function SpotlightCard({ children, className = '', showBrackets = false }) {
   const [spotlight, setSpotlight] = useState({ x: 50, y: 40 });
   return (
     <div className={`rb-spotlight-card ${className}`} style={{ '--spotlight-x': `${spotlight.x}%`, '--spotlight-y': `${spotlight.y}%` }} onPointerMove={(event) => {
@@ -31,6 +31,13 @@ export function SpotlightCard({ children, className = '' }) {
       const box = event.currentTarget.getBoundingClientRect();
       setSpotlight({ x: ((event.clientX - box.left) / box.width) * 100, y: ((event.clientY - box.top) / box.height) * 100 });
     }}>
+      {showBrackets && <>
+        <div className="glass-hud-bracket corner-tl" aria-hidden="true" />
+        <div className="glass-hud-bracket corner-tr" aria-hidden="true" />
+        <div className="glass-hud-bracket corner-br" aria-hidden="true" />
+        <div className="glass-hud-bracket corner-bl" aria-hidden="true" />
+      </>}
+      <div className="glass-carbon-mesh" aria-hidden="true" />
       {children}
     </div>
   );

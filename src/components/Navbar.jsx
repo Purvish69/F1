@@ -72,8 +72,6 @@ function Navbar() {
                 <span className="f1-logo-year">2026</span>
               </div>
               <div className="nav-brand-status">
-                <span className="nav-status-pulse" />
-                <span className="nav-status-txt">SEASON HUB</span>
               </div>
             </a>
 

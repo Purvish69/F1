@@ -130,7 +130,7 @@ function Hero() {
               </div>
             </GlassTitleCard>
 
-            <Typography className="hero-copy">Datos oficiales, clasificaciones y calendario 2026. Una lectura clara de la parrilla, con la pista siempre en primer plano.</Typography>
+            {/* <Typography className="hero-copy">Datos oficiales, clasificaciones y calendario 2026. Una lectura clara de la parrilla, con la pista siempre en primer plano.</Typography> */}
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} className="hero-actions"><Button href="#pilotos" size="large" variant="contained" endIcon={<ArrowForwardIcon />}>Explorar pilotos</Button><Button href={sourceLinks.results} target="_blank" rel="noreferrer" size="large" variant="outlined">Fuente oficial F1</Button></Stack>
           </MotionBox>
         </Grid>

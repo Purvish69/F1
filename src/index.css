@@ -3184,6 +3184,279 @@ section[id] {
   padding: 40px 20px;
 }
 
-@media (max-width: 899px) { .premium-hero { min-height: auto; } .hero-machine-card { max-width: 100%; width: 100%; } .hero-orbit-one { right: -620px; } .hero-car-stage { min-height: 230px; } }
-@media (max-width: 520px) { .intro-mark { font-size: 3.6rem; } .lights-out { font-size: 2.4rem; } .hero-title { font-size: 5.5rem !important; } .next-race-bar { align-items: start; grid-template-columns: 1fr auto; } .next-race-bar strong { grid-column: 1 / -1; grid-row: 2; } .next-race-bar b { grid-column: 2; grid-row: 1; } .pilot-filter-glass-capsule { width: 100%; justify-content: space-between; } .pilot-team-custom-select { min-width: 0; flex-grow: 1; } .gallery-filter-pill-bar { width: 100%; justify-content: space-between; } .gallery-tab-pill { padding: 6px 10px; font-size: 0.72rem; } .lightbox-meta-panel { flex-direction: column; gap: 12px; align-items: flex-start; } .footer-bottom-bar { flex-direction: column; align-items: flex-start; gap: 16px; } .footer-bottom-actions { width: 100%; justify-content: space-between; } .results-filter-pill-bar { width: 100%; justify-content: space-between; } .results-tab-pill { padding: 6px 10px; font-size: 0.72rem; } .table-header-row, .table-data-row { grid-template-columns: 35px 1.2fr 1fr 40px; } .th-time, .td-time { display: none; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVE POLISH (DEKSTOP DESIGN REMAINS UNTOUCHED)
+   ========================================================================== */
+
+/* ── TABLET & MOBILE GLOBAL ADAPTATIONS (<= 899px) ── */
+@media (max-width: 899px) {
+  /* SECTION SPACING & HERO */
+  .premium-hero {
+    min-height: auto !important;
+    padding: clamp(90px, 14vw, 120px) 0 clamp(60px, 10vw, 90px) !important;
+  }
+  .hero-glass-col,
+  .hero-circuit-col {
+    width: 100% !important;
+  }
+  .hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .hero-actions .MuiButton-root {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* PODIUM SWITCHER & CIRCUIT SHOWCASE TABS SCROLLABLE */
+  .podium-switcher {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 4px !important;
+  }
+  .podium-switcher::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .circuit-tabs-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 8px !important;
+    padding-bottom: 4px !important;
+  }
+  .circuit-tabs-grid::-webkit-scrollbar {
+    display: none !important;
+  }
+  .circuit-tab-card {
+    flex: 0 0 135px !important;
+    min-width: 135px !important;
+  }
+
+  /* TOOLBAR & NAV */
+  .nav-glass-shell {
+    padding: 6px 14px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* ── PHONE MOBILE ADAPTATIONS (<= 600px) ── */
+@media (max-width: 600px) {
+  /* NAVBAR MOBILE */
+  .nav-live-cta {
+    display: none !important;
+  }
+  .nav-brand-link {
+    gap: 6px !important;
+  }
+  .f1-logo-main {
+    font-size: 1.4rem !important;
+  }
+  .f1-logo-year {
+    font-size: 0.9rem !important;
+  }
+  .nav-mobile-drawer-paper {
+    width: min(88vw, 340px) !important;
+  }
+  .mobile-drawer-content {
+    padding: 20px 16px !important;
+  }
+  .mobile-nav-item {
+    padding: 12px 14px !important;
+    min-height: 48px !important;
+  }
+
+  /* HERO CARD & TYPOGRAPHY */
+  .hero-title {
+    font-size: clamp(3.2rem, 14vw, 4.8rem) !important;
+    letter-spacing: -0.02em !important;
+  }
+  .f1-glass-text {
+    font-size: clamp(3.2rem, 14vw, 4.8rem) !important;
+  }
+  .hero-glass-hud-top {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .hud-spec-tag {
+    display: none !important;
+  }
+  .hero-glass-tech-specs {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .tech-spec-pill {
+    width: 100% !important;
+    text-align: center !important;
+  }
+  .f1-interactive-boost-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* CIRCUIT SHOWCASE HUD & MAP */
+  .circuit-track-stage {
+    min-height: 220px !important;
+    padding: 12px 8px !important;
+  }
+  .circuit-weather-hud {
+    top: 8px !important;
+    left: 8px !important;
+    gap: 4px !important;
+  }
+  .weather-tag, .weather-temp {
+    font-size: 0.62rem !important;
+    padding: 3px 8px !important;
+  }
+  .circuit-sectors-hud {
+    top: 8px !important;
+    right: 8px !important;
+    gap: 4px !important;
+  }
+  .sector-pill {
+    padding: 3px 6px !important;
+    font-size: 0.6rem !important;
+  }
+  .circuit-extra-hud-bottom {
+    display: none !important;
+  }
+  .circuit-telemetry-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .telemetry-cell {
+    min-height: 76px !important;
+    padding: 8px !important;
+  }
+  .telemetry-value {
+    font-size: 1.35rem !important;
+  }
+  .next-race-bar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+  .next-race-bar strong {
+    white-space: normal !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* SECTION HEADERS */
+  .MuiTypography-h2 {
+    font-size: clamp(2.4rem, 11vw, 3.8rem) !important;
+  }
+
+  /* PILOTOS SECTION */
+  .pilot-filter-glass-capsule {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .pilot-team-custom-select {
+    min-width: 0 !important;
+    flex-grow: 1 !important;
+  }
+
+  /* PILOTO CARD POLISH */
+  .rb-glass-title-card,
+  .circuit-card-spotlight {
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  /* EQUIPOS SECTION */
+  .equipo-card-container {
+    padding: 16px !important;
+  }
+  .equipo-drivers-row {
+    flex-wrap: wrap !important;
+  }
+
+  /* RESULTADOS SECTION */
+  .results-filter-pill-bar,
+  .gallery-filter-pill-bar {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    gap: 6px !important;
+    width: 100% !important;
+    padding-bottom: 4px !important;
+  }
+  .results-filter-pill-bar::-webkit-scrollbar,
+  .gallery-filter-pill-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .results-tab-pill,
+  .gallery-tab-pill {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    padding: 6px 14px !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* MODAL & TABLES */
+  .table-header-row,
+  .table-data-row {
+    grid-template-columns: 32px 1.2fr 1fr 45px !important;
+    padding: 6px 8px !important;
+    font-size: 0.7rem !important;
+  }
+  .th-time, .td-time {
+    display: none !important;
+  }
+
+  /* GALERIA & LIGHTBOX */
+  .lightbox-meta-panel {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  /* FOOTER MOBILE */
+  .f1-modern-footer {
+    padding-bottom: 30px !important;
+  }
+  .footer-bottom-bar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .footer-bottom-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .footer-tech-spec-bar {
+    flex-wrap: wrap !important;
+    gap: 4px 8px !important;
+  }
+}
+
+/* ── SMALL PHONES (<= 400px) ── */
+@media (max-width: 400px) {
+  .hero-title {
+    font-size: 2.8rem !important;
+  }
+  .f1-glass-text {
+    font-size: 2.8rem !important;
+  }
+  .circuit-tab-card {
+    flex: 0 0 115px !important;
+    min-width: 115px !important;
+    padding: 6px 8px !important;
+  }
+  .circuit-tab-title {
+    font-size: 0.78rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

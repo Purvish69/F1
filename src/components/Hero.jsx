@@ -83,8 +83,8 @@ function Hero() {
   return <Box id="inicio" component="section" className="premium-hero" onPointerMove={handlePointerMove} onPointerLeave={() => setTilt({ x: 0, y: 0 })}>
     <RacingGrid /><Box className="hero-orbit hero-orbit-one" aria-hidden="true" /><Box className="hero-orbit hero-orbit-two" aria-hidden="true" />
     <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
-      <Grid container spacing={{ xs: 4, md: 5, lg: 6 }} alignItems="stretch">
-        <Grid item xs={12} md={6} className="hero-glass-col">
+      <Grid container spacing={{ xs: 4, md: 5, lg: 6 }} sx={{ alignItems: 'stretch' }}>
+        <Grid xs={12} md={6} className="hero-glass-col">
           <MotionBox className="hero-card-motion" initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: reducedMotion ? 0 : .08 }}>
             <GlassTitleCard className={`hero-title-glass-box ${boostActive ? 'hero-boost-active' : ''}`} isBoosted={boostActive}>
               <AeroSpeedStreaks boosted={boostActive} />
@@ -132,7 +132,7 @@ function Hero() {
             </GlassTitleCard>
           </MotionBox>
         </Grid>
-        <Grid item xs={12} md={6} className="hero-circuit-col">
+        <Grid xs={12} md={6} className="hero-circuit-col">
           <MotionBox className="hero-card-motion" initial={{ opacity: 0, scale: .96, x: 20 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ duration: reducedMotion ? 0 : .82, delay: reducedMotion ? 0 : .18 }}>
             <SpotlightCard className="hero-machine-card circuit-card-spotlight" showBrackets={true} style={{ '--current-team-color': '#E8002D' }}>
               <CircuitShowcase />
@@ -156,12 +156,10 @@ function Hero() {
         <MotionBox initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reducedMotion ? 0 : .7, delay: .25 }}>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            justifyContent="space-between"
             spacing={2}
-            sx={{ mb: 2.5 }}
+            sx={{ mb: 2.5, alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between' }}
           >
-            <Stack direction="row" alignItems="center" spacing={1.5}>
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
               <span className="section-dot-pulse" style={{ background: currentVisual?.color || '#00D2BE', boxShadow: `0 0 12px ${currentVisual?.color || '#00D2BE'}` }} />
               <Typography variant="h3" sx={{ fontSize: { xs: '1.5rem', md: '2.1rem' }, fontFamily: 'var(--font-display)', color: '#fff', letterSpacing: '0.06em', lineHeight: 1 }}>
                 EQUIPOS TOP 3
@@ -251,6 +249,7 @@ function Hero() {
                       src={currentVisual?.car}
                       alt={`Monoplaza de ${currentTeam.name}`}
                       className="hero-car"
+                      referrerPolicy="no-referrer"
                     />
 
                     {/* Interactive Aerodynamic Hotspots */}
@@ -287,7 +286,7 @@ function Hero() {
 
             <Grid container spacing={1.5} className="hero-telemetry">
               {(loading ? Array.from({ length: 4 }, (_, index) => ({ label: `CARGANDO ${index + 1}`, value: '…', detail: 'Datos en directo' })) : telemetry).map((metric) => (
-                <Grid item xs={6} sm={3} key={metric.label}>
+                <Grid xs={6} sm={3} key={metric.label}>
                   <div className="telemetry-cell">
                     <div className="telemetry-value">{metric.prefix}{metric.numeric && typeof metric.value === 'number' ? <CountUp value={metric.value} /> : metric.value}{metric.suffix}</div>
                     <div className="telemetry-label">{metric.label}</div>

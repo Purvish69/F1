@@ -9,7 +9,7 @@ const driverImage = (teamSlug, code) =>
   `${mediaBase}/c_fill%2Cw_720/q_auto/v1740000001/common/f1/2026/${teamSlug}/${code}/2026${teamSlug}${code}right.webp`;
 
 const carImage = (teamSlug) =>
-  `${mediaBase}/c_lfill%2Cw_3392/q_auto/v1740000001/common/f1/2026/${teamSlug}/2026${teamSlug}carright.webp`;
+  `${mediaBase}/c_lfill,w_1920/q_auto/v1740000001/common/f1/2026/${teamSlug}/2026${teamSlug}carright.webp`;
 
 export const navLinks = [
   { label: 'Inicio', href: '#inicio' },

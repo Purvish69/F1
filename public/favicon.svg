@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Background Cyber Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0f18" />
+      <stop offset="55%" stop-color="#050508" />
+      <stop offset="100%" stop-color="#14060b" />
+    </linearGradient>
+
+    <!-- F1 Official Red Gradient -->
+    <linearGradient id="f1Red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2442" />
+      <stop offset="50%" stop-color="#E8002D" />
+      <stop offset="100%" stop-color="#9E001B" />
+    </linearGradient>
+
+    <!-- Titanium Chrome / White Gradient -->
+    <linearGradient id="chromeWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="70%" stop-color="#E2E8F0" />
+      <stop offset="100%" stop-color="#94A3B8" />
+    </linearGradient>
+
+    <!-- Neon Cyan Accent -->
+    <linearGradient id="cyanAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="100%" stop-color="#00D2BE" />
+    </linearGradient>
+
+    <!-- Outer Red Glow Filter -->
+    <filter id="redGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Base Badge Squircle Container -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bgGrad)" stroke="rgba(255, 255, 255, 0.16)" stroke-width="2.5" />
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="none" stroke="url(#f1Red)" stroke-width="1.5" opacity="0.65" />
+
+  <!-- Carbon Mesh Lines -->
+  <path d="M4 32 H124 M4 64 H124 M4 96 H124 M32 4 V124 M64 4 V124 M96 4 V124" stroke="rgba(255, 255, 255, 0.04)" stroke-width="1" />
+
+  <!-- F1 Iconic Italic Logo Mark -->
+  <!-- "F" Main Red Swoop -->
+  <path d="M 22 92 L 48 36 L 76 36 L 70 49 L 51 49 L 45 62 L 63 62 L 57 75 L 39 75 L 31 92 Z" fill="url(#f1Red)" filter="url(#redGlow)" />
+  
+  <!-- "F" Top Extension -->
+  <path d="M 72 36 L 98 36 L 92 49 L 66 49 Z" fill="url(#f1Red)" />
+
+  <!-- "1" Italicized White Bar -->
+  <path d="M 77 92 L 103 36 L 114 36 L 88 92 Z" fill="url(#chromeWhite)" />
+
+  <!-- Telemetry Aerodynamic Cyan Speed Curve -->
+  <path d="M 18 103 Q 64 110 110 103" stroke="url(#cyanAccent)" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9" />
+
+  <!-- Live Pulse Telemetry Dot -->
+  <circle cx="110" cy="103" r="3.5" fill="#00F0FF" />
+</svg>

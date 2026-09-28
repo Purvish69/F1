@@ -20,7 +20,7 @@ import { getDriverPortrait, getTeamVisual } from '../data/visualMetadata.js';
 
 const mediaBase = 'https://media.formula1.com/image/upload';
 const carImage = (teamSlug) =>
-  `${mediaBase}/c_lfill%2Cw_3392/q_auto/v1740000001/common/f1/2026/${teamSlug}/2026${teamSlug}carright.webp`;
+  `${mediaBase}/c_lfill,w_1920/q_auto/v1740000001/common/f1/2026/${teamSlug}/2026${teamSlug}carright.webp`;
 
 export const galleryItems = [
   {
@@ -274,6 +274,7 @@ function Galeria() {
                     src={item.src}
                     alt={item.caption}
                     loading="lazy"
+                    referrerPolicy="no-referrer"
                     className={isCar ? 'gallery-car-img' : 'gallery-driver-img'}
                   />
                   <div className="gallery-zoom-overlay">
@@ -356,6 +357,7 @@ function Galeria() {
                 <img
                   src={activeImage.src}
                   alt={activeImage.caption}
+                  referrerPolicy="no-referrer"
                   className={activeImage.type === 'car' ? 'lightbox-car-img' : 'lightbox-driver-img'}
                 />
               </div>

@@ -14,7 +14,22 @@ function DriverAvatar({ driver, teamColor }) {
   const isFallback = !driver.image || /d_driver_fallback_image\.png(?:$|[?#])/.test(driver.image);
   const [imageFailed, setImageFailed] = useState(isFallback);
   const initials = driver.name.split(' ').map((part) => part[0]).join('').slice(0, 2);
-  return <Avatar src={imageFailed ? undefined : driver.image} alt={driver.name} imgProps={{ loading: 'lazy', onError: () => setImageFailed(true) }} sx={{ bgcolor: teamColor, color: 'common.white', fontSize: 12, fontWeight: 900, height: 34, width: 34, '& img': { objectFit: 'cover', objectPosition: '50% 12%' } }}>{initials}</Avatar>;
+  return (
+    <Avatar
+      src={imageFailed ? undefined : driver.image}
+      alt={driver.name}
+      slotProps={{
+        img: {
+          loading: 'lazy',
+          referrerPolicy: 'no-referrer',
+          onError: () => setImageFailed(true)
+        }
+      }}
+      sx={{ bgcolor: teamColor, color: 'common.white', fontSize: 12, fontWeight: 900, height: 34, width: 34, '& img': { objectFit: 'cover', objectPosition: '50% 12%' } }}
+    >
+      {initials}
+    </Avatar>
+  );
 }
 
 function EquipoCard({ team, driverMap, leaderPoints }) {
@@ -143,6 +158,7 @@ function EquipoCard({ team, driverMap, leaderPoints }) {
           src={team.car}
           alt={`${team.name} 2026 car`}
           loading="lazy"
+          referrerPolicy="no-referrer"
           style={{
             display: 'block',
             margin: '0 auto',
@@ -154,7 +170,7 @@ function EquipoCard({ team, driverMap, leaderPoints }) {
             position: 'relative',
             translateX: tiltDisabled ? 0 : carX,
             translateY: tiltDisabled ? 0 : carY,
-            width: 'auto',
+            width: '100%',
             zIndex: 1
           }}
         />

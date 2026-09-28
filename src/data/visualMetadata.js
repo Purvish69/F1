@@ -45,7 +45,7 @@ export function getTeamVisual(constructorId) {
   const slug = teamSlug[constructorId] || constructorId;
   return {
     color: teamColors[constructorId] || '#E8002D',
-    car: `${mediaBase}/c_lfill%2Cw_3392/q_auto/v1740000001/common/f1/2026/${slug}/2026${slug}carright.webp`,
+    car: `${mediaBase}/c_lfill,w_1920/q_auto/v1740000001/common/f1/2026/${slug}/2026${slug}carright.webp`,
     fullName: '', base: 'Información no disponible en Jolpica', engine: '—', chassis: '—', chief: '—', drivers: []
   };
 }

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import Lenis from 'lenis';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
@@ -50,6 +52,32 @@ const theme = createTheme({
 });
 
 function App() {
+  useEffect(() => {
+    let lenis;
+    let rafId;
+    try {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true
+      });
+
+      const raf = (time) => {
+        lenis?.raf(time);
+        rafId = requestAnimationFrame(raf);
+      };
+
+      rafId = requestAnimationFrame(raf);
+    } catch {
+      // Graceful fallback if Lenis cannot be initialized
+    }
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      lenis?.destroy();
+    };
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
